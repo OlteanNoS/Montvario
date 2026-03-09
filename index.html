@@ -130,6 +130,15 @@
     .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .form-grid label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
     .muted-box { padding: 12px 14px; border-radius: 16px; background: #f8fafc; border: 1px dashed var(--border); color: var(--muted); font-size: 14px; }
+    .doc-list { display: flex; flex-direction: column; gap: 14px; }
+    .doc-item { border: 1px solid var(--border); border-radius: 18px; background: #fff; padding: 16px; }
+    .doc-header { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+    .doc-meta { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .doc-checks { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .doc-check { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 14px; }
+    .doc-check input[type="checkbox"] { width: 18px; height: 18px; min-width: 18px; }
+    .doc-check span { white-space: normal; }
+    .doc-note { margin-top: 12px; color: var(--muted); font-size: 13px; }
 
     @media (max-width: 1100px) {
       .stats, .grid-2, .grid-3, .promo-grid, .form-grid { grid-template-columns: 1fr; }
@@ -711,27 +720,27 @@
         return `
           <div class="card section" style="margin-bottom:20px;">
             <h2>${rank} → ${requirements[rank].next}</h2>
-            <div class="desc">Raport separat pentru criterii și eligibilitate</div>
-            ${list.length ? `<div class="promo-grid">
+            <div class="desc">Raport în stil document, cu bife manuale și listă în șir</div>
+            ${list.length ? `<div class="doc-list">
               ${list.map(member => `
-                <div class="req-box">
-                  <div class="row">
+                <div class="doc-item">
+                  <div class="doc-header">
                     <div>
                       <strong>${member.nickname || member.name}</strong>
-                      <div class="small">${member.name} • ${member.rank}</div>
+                      <div class="doc-meta">${member.name} • ${member.rank} • Următorul grad: ${member.evaluation.next}</div>
                     </div>
                     <span class="badge ${member.evaluation.eligible ? "ok" : "warn"}">${member.evaluation.eligible ? "Eligibil" : "În lucru"}</span>
                   </div>
-                  <div class="small" style="margin-top:10px">Progres: ${member.evaluation.progress}%</div>
-                  <div class="progress" style="margin-top:8px"><span style="width:${member.evaluation.progress}%"></span></div>
-                  <div style="margin-top:10px;">
-                    ${member.evaluation.checks.map(check => `
-                      <div class="check-row">
+                  <div class="doc-meta">Progres automat: ${member.evaluation.progress}%</div>
+                  <div class="doc-checks">
+                    ${member.evaluation.checks.map((check, idx) => `
+                      <label class="doc-check">
+                        <input type="checkbox" data-member="${member.id}" data-check="${idx}" ${check.ok ? "checked" : ""} />
                         <span>${check.label}</span>
-                        <span class="badge ${check.ok ? "ok" : "warn"}">${check.ok ? "OK" : "Lipsește"}</span>
-                      </div>
+                      </label>
                     `).join("")}
                   </div>
+                  ${member.evaluation.missing.length ? `<div class="doc-note">Lipsește automat: ${member.evaluation.missing.join(', ')}</div>` : `<div class="doc-note">Toate condițiile automate sunt îndeplinite.</div>`}
                 </div>
               `).join("")}
             </div>` : `<div class="muted-box">Nu există membri pe acest grad.</div>`}
