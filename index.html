@@ -1,865 +1,1140 @@
-import React, { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
-import { Search, Users, Shield, ClipboardList, TrendingUp, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
-
-const RANKS = ["Șef de tură", "Supervizor", "Manager", "Asociat", "Made Man"];
-
-const GUIDE = [
-  {
-    rank: "Șef de tură",
-    description:
-      "Primul pas în lumea ilegalităților. Are încă o legătură strânsă cu service-ul și ghidează mecanicii.",
-    roles: [
-      "Ghidează mecanicii și gestionează activitățile la service",
-      "Participă în mare parte la activități legale",
-      "Învață partea ilegală și participă în limita posibilităților"
-    ],
-    promotionTo: "Supervizor",
-    requirements: [
-      "Minim 30P",
-      "Minim o săptămână vechime",
-      "1 contract de livrare",
-      "Mașină HS",
-      "Cunoașterea zonei Industrială Sud",
-      "Minim 3 anunțuri de angajare"
-    ]
-  },
-  {
-    rank: "Supervizor",
-    description:
-      "Are deja o cunoștință de bază asupra părții ilegale și participă la activități mai complexe.",
-    roles: [
-      "Ajută Șefii de Tură pe partea legală",
-      "Cunoaște de bază partea ilegală și zonele orașului",
-      "Organizează sau participă la răpiri"
-    ],
-    promotionTo: "Manager",
-    requirements: [
-      "Minim 30P",
-      "RF LS pe o mașină HS",
-      "Minim 2 contracte de livrare",
-      "Minim 2 săptămâni vechime sau o săptămână cu minim 60P",
-      "Minim 1 armă mică și 1 armă mare",
-      "Minim 1 angajare",
-      "Minim 3 anunțuri de angajare"
-    ]
-  },
-  {
-    rank: "Manager",
-    description:
-      "Intermediar între partea legală și ilegală. Coordonează activități legale sau ilegale reduse.",
-    roles: [
-      "Coordonează Șefii de Tură",
-      "Coordonează acțiuni",
-      "Organizează transporturi și mici lovituri"
-    ],
-    promotionTo: "Asociat",
-    requirements: [
-      "Minim 30P",
-      "Certificat locații",
-      "Licență Heli",
-      "2 acțiuni ilegale în 2 săptămâni",
-      "2 săptămâni consecutive cu minimul atins sau minim 80P",
-      "Minim 6 contracte de livrare",
-      "Minim 2 arme mici și 2 arme mari",
-      "Licență Pilot HS",
-      "1M în bancă",
-      "Minim 3 angajări",
-      "Minim 3 anunțuri de angajare",
-      "RF pe o mașină extreme"
-    ]
-  },
-  {
-    rank: "Asociat",
-    description:
-      "Nu mai are legătură cu afacerile legale. Se concentrează pe sarcini ilegale de bază.",
-    roles: [
-      "Participă activ la jafuri și acțiuni organizate",
-      "Conduce pe teren sub supravegherea unui Made Man",
-      "Poate propune recruți cu acord Made Man"
-    ],
-    promotionTo: "Made Man",
-    requirements: [
-      "Minim 30P",
-      "Minim 5 arme (2x Tec9 + 3x AK/Advanced) full",
-      "Certificat Gunner",
-      "Minim 2M în bancă",
-      "Elicopter LS",
-      "4 acțiuni ilegale în 3 săptămâni",
-      "Minim 3 angajări",
-      "Minim 3 săptămâni vechime sau 2 săptămâni cu minim 70P",
-      "Seriozitate și implicare"
-    ]
-  },
-  {
-    rank: "Made Man",
-    description:
-      "Are responsabilități semnificative, loialitate absolută și devine model pentru ceilalți.",
-    roles: [
-      "Conduce și organizează acțiuni importante",
-      "Propune membri pentru inițiere și se ocupă de inițiere",
-      "Reprezintă familia mică în fața conducerii"
-    ],
-    promotionTo: null,
-    requirements: [
-      "Loialitate totală",
-      "Activitate constantă",
-      "Își atinge minimul de puncte",
-      "Implicare constantă",
-      "Seriozitate"
-    ]
-  }
-];
-
-const POINT_RULES = {
-  jobAnnouncements: 1,
-  recruitSearch: 5,
-  recruitServed: 1,
-  deliveryContract: 2,
-  kidnapping: 5,
-  heist: 10,
-  mineriada: 2,
-  refinement: 1,
-  lsActivityHour: 1,
-  organizedLsActivity: 2,
-  cayoMoneyWashHour: 1,
-  cayoWeaponsHour: 1,
-  cayoRaidPresence: 2,
-  eventHour: 1,
-  steelVan: 1,
-  sulfurVan: 2,
-  batteryCell: 1,
-  board: 1,
-  wires: 1,
-  usb: 3,
-  gps: 5,
-  hacking: 5
-};
-
-const members = [
-  {
-    id: 1,
-    nickname: "Raven",
-    name: "Mihai Popescu",
-    rank: "Șef de tură",
-    cnp: "1980101123456",
-    months: 1,
-    phone: "0712 000 111",
-    carNumber: "B-99-MTV",
-    hireDate: "2026-02-20",
-    lastPromotion: "2026-02-20",
-    bulletinUrl: "https://example.com/buletin-raven.jpg",
-    hs: true,
-    pilot: false,
-    rfLs: false,
-    elicopterLs: false,
-    heli: false,
-    pilotHs: false,
-    status: "Activ",
-    mentor: "Viper",
-    knowsIndustrialSouth: true,
-    locationCertificate: false,
-    gunnerCertificate: false,
-    smallWeapons: 1,
-    bigWeapons: 0,
-    bankBalance: 450000,
-    weekly: {
-      current: {
-        jobAnnouncements: 3,
-        recruitSearch: 0,
-        recruitServed: 1,
-        deliveryContracts: 1,
-        illegalHeists: 0,
-        illegalKidnappings: 1,
-        lsMineriada: 1,
-        lsRefinement: 2,
-        lsActivityHours: 3,
-        lsOrganized: 1,
-        steelVans: 2,
-        sulfurVans: 0,
-        belvarroHelpPoints: 2,
-        cayoMoneyWashHours: 0,
-        cayoWeaponsHours: 1,
-        cayoRaidPresence: 0,
-        eventHours: 2,
-        components: { batteryCell: 2, board: 1, wires: 0, usb: 0, gps: 0, hacking: 0 }
-      },
-      previous: {
-        total: 24
-      }
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Montvario Management Portal</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #0f172a;
+      --soft: #f1f5f9;
+      --success: #dcfce7;
+      --warning: #fef3c7;
+      --danger: #fee2e2;
+      --success-text: #166534;
+      --warning-text: #92400e;
+      --danger-text: #991b1b;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      --radius: 18px;
     }
-  },
-  {
-    id: 2,
-    nickname: "Viper",
-    name: "Andrei Ionescu",
-    rank: "Manager",
-    cnp: "1970202123456",
-    months: 3,
-    phone: "0722 111 222",
-    carNumber: "B-11-MTV",
-    hireDate: "2025-12-10",
-    lastPromotion: "2026-02-01",
-    bulletinUrl: "https://example.com/buletin-viper.jpg",
-    hs: true,
-    pilot: true,
-    rfLs: true,
-    elicopterLs: false,
-    heli: true,
-    pilotHs: true,
-    status: "Activ",
-    mentor: "Belvarro",
-    knowsIndustrialSouth: true,
-    locationCertificate: true,
-    gunnerCertificate: false,
-    smallWeapons: 2,
-    bigWeapons: 2,
-    bankBalance: 1350000,
-    weekly: {
-      current: {
-        jobAnnouncements: 4,
-        recruitSearch: 1,
-        recruitServed: 1,
-        deliveryContracts: 6,
-        illegalHeists: 1,
-        illegalKidnappings: 2,
-        lsMineriada: 2,
-        lsRefinement: 1,
-        lsActivityHours: 6,
-        lsOrganized: 2,
-        steelVans: 3,
-        sulfurVans: 2,
-        belvarroHelpPoints: 3,
-        cayoMoneyWashHours: 2,
-        cayoWeaponsHours: 2,
-        cayoRaidPresence: 1,
-        eventHours: 2,
-        components: { batteryCell: 1, board: 1, wires: 1, usb: 1, gps: 0, hacking: 0 }
-      },
-      previous: {
-        total: 68
-      }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
-  },
-  {
-    id: 3,
-    nickname: "Ghost",
-    name: "Robert Marin",
-    rank: "Asociat",
-    cnp: "1960612123456",
-    months: 5,
-    phone: "0733 444 555",
-    carNumber: "B-77-MTV",
-    hireDate: "2025-11-15",
-    lastPromotion: "2026-01-28",
-    bulletinUrl: "https://example.com/buletin-ghost.jpg",
-    hs: true,
-    pilot: true,
-    rfLs: true,
-    elicopterLs: true,
-    heli: true,
-    pilotHs: true,
-    status: "Activ",
-    mentor: "Belvarro",
-    knowsIndustrialSouth: true,
-    locationCertificate: true,
-    gunnerCertificate: true,
-    smallWeapons: 3,
-    bigWeapons: 3,
-    bankBalance: 2450000,
-    weekly: {
-      current: {
-        jobAnnouncements: 3,
-        recruitSearch: 2,
-        recruitServed: 1,
-        deliveryContracts: 4,
-        illegalHeists: 2,
-        illegalKidnappings: 2,
-        lsMineriada: 1,
-        lsRefinement: 0,
-        lsActivityHours: 4,
-        lsOrganized: 1,
-        steelVans: 1,
-        sulfurVans: 2,
-        belvarroHelpPoints: 4,
-        cayoMoneyWashHours: 3,
-        cayoWeaponsHours: 2,
-        cayoRaidPresence: 1,
-        eventHours: 3,
-        components: { batteryCell: 0, board: 1, wires: 1, usb: 1, gps: 1, hacking: 0 }
-      },
-      previous: {
-        total: 74
-      }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
     }
-  }
-];
 
-function clamp(value, max) {
-  return Math.min(value, max);
-}
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
 
-function calculateBreakdown(member) {
-  const w = member.weekly.current;
-  const announcements = w.jobAnnouncements * POINT_RULES.jobAnnouncements;
-  const recruit = w.recruitSearch * POINT_RULES.recruitSearch + w.recruitServed * POINT_RULES.recruitServed;
-  const contracts = w.deliveryContracts * POINT_RULES.deliveryContract;
-  const illegal = w.illegalHeists * POINT_RULES.heist + w.illegalKidnappings * POINT_RULES.kidnapping;
-  const ls =
-    w.lsMineriada * POINT_RULES.mineriada +
-    w.lsRefinement * POINT_RULES.refinement +
-    w.lsActivityHours * POINT_RULES.lsActivityHour +
-    w.lsOrganized * POINT_RULES.organizedLsActivity +
-    clamp(w.steelVans, 4) * POINT_RULES.steelVan +
-    clamp(w.sulfurVans, 4) * POINT_RULES.sulfurVan +
-    w.belvarroHelpPoints;
-  const cayo =
-    w.cayoMoneyWashHours * POINT_RULES.cayoMoneyWashHour +
-    w.cayoWeaponsHours * POINT_RULES.cayoWeaponsHour +
-    w.cayoRaidPresence * POINT_RULES.cayoRaidPresence;
-  const events = w.eventHours * POINT_RULES.eventHour;
-  const components =
-    w.components.batteryCell * POINT_RULES.batteryCell +
-    w.components.board * POINT_RULES.board +
-    w.components.wires * POINT_RULES.wires +
-    w.components.usb * POINT_RULES.usb +
-    w.components.gps * POINT_RULES.gps +
-    w.components.hacking * POINT_RULES.hacking;
+    h1, h2, h3, p { margin: 0; }
+    .subtitle { color: var(--muted); margin-top: 6px; }
 
-  const total = announcements + recruit + contracts + illegal + ls + cayo + events + components;
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
 
-  return {
-    announcements,
-    recruit,
-    contracts,
-    illegal,
-    ls,
-    cayo,
-    events,
-    components,
-    total,
-    previous: member.weekly.previous.total
-  };
-}
+    .btn.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
 
-function getNextRank(rank) {
-  const index = RANKS.indexOf(rank);
-  if (index < 0 || index === RANKS.length - 1) return null;
-  return RANKS[index + 1];
-}
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      background: white;
+      border: 1px solid var(--border);
+      padding: 8px;
+      border-radius: 18px;
+      margin-bottom: 24px;
+    }
 
-function promotionStatus(member) {
-  const next = getNextRank(member.rank);
-  const totals = calculateBreakdown(member);
-  if (!next) {
-    return { status: "Top rank", missing: [] };
-  }
+    .tab-btn {
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      padding: 12px 10px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--muted);
+    }
 
-  const missing = [];
-  if (totals.total < 30) missing.push(`Îi mai lipsesc ${30 - totals.total} puncte`);
+    .tab-btn.active {
+      background: var(--soft);
+      color: var(--text);
+    }
 
-  if (member.rank === "Șef de tură") {
-    if (member.months < 1) missing.push("Minim o săptămână vechime");
-    if (member.weekly.current.deliveryContracts < 1) missing.push("1 contract de livrare");
-    if (!member.hs) missing.push("Mașină HS");
-    if (!member.knowsIndustrialSouth) missing.push("Cunoașterea zonei Industrială Sud");
-    if (member.weekly.current.jobAnnouncements < 3) missing.push("3 anunțuri de angajare");
-  }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-  if (member.rank === "Supervizor") {
-    if (!member.rfLs) missing.push("RF LS pe o mașină HS");
-    if (member.weekly.current.deliveryContracts < 2) missing.push("2 contracte de livrare");
-    if (member.months < 2 && totals.previous < 60) missing.push("2 săptămâni vechime sau o săptămână cu 60P");
-    if (member.smallWeapons < 1) missing.push("1 armă mică");
-    if (member.bigWeapons < 1) missing.push("1 armă mare");
-    if (member.weekly.current.recruitSearch + member.weekly.current.recruitServed < 1) missing.push("1 angajare");
-    if (member.weekly.current.jobAnnouncements < 3) missing.push("3 anunțuri de angajare");
-  }
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
 
-  if (member.rank === "Manager") {
-    if (!member.locationCertificate) missing.push("Certificat locații");
-    if (!member.heli) missing.push("Licență Heli");
-    if (member.weekly.current.illegalHeists + member.weekly.current.illegalKidnappings < 2) missing.push("2 acțiuni ilegale în 2 săptămâni");
-    if (!(totals.total >= 80 || (totals.total >= 30 && totals.previous >= 30))) missing.push("80P sau 2 săptămâni consecutive cu minimul atins");
-    if (member.weekly.current.deliveryContracts < 6) missing.push("6 contracte de livrare");
-    if (member.smallWeapons < 2) missing.push("2 arme mici");
-    if (member.bigWeapons < 2) missing.push("2 arme mari");
-    if (!member.pilotHs) missing.push("Licență Pilot HS");
-    if (member.bankBalance < 1000000) missing.push("1M în bancă");
-    if (member.weekly.current.recruitSearch + member.weekly.current.recruitServed < 3) missing.push("3 angajări");
-    if (member.weekly.current.jobAnnouncements < 3) missing.push("3 anunțuri de angajare");
-    if (!member.rfLs) missing.push("RF pe mașină extreme");
-  }
+    .grid.cards-5 { grid-template-columns: repeat(5, 1fr); }
+    .grid.cards-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid.cards-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid.cards-4 { grid-template-columns: repeat(4, 1fr); }
+    .grid.cards-6 { grid-template-columns: repeat(6, 1fr); }
 
-  if (member.rank === "Asociat") {
-    if (member.smallWeapons < 2 || member.bigWeapons < 3) missing.push("5 arme totale (2 mici + 3 mari)");
-    if (!member.gunnerCertificate) missing.push("Certificat Gunner");
-    if (member.bankBalance < 2000000) missing.push("2M în bancă");
-    if (!member.elicopterLs) missing.push("Elicopter LS");
-    if (member.weekly.current.illegalHeists + member.weekly.current.illegalKidnappings < 4) missing.push("4 acțiuni ilegale în 3 săptămâni");
-    if (member.weekly.current.recruitSearch + member.weekly.current.recruitServed < 3) missing.push("3 angajări");
-  }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
 
-  return {
-    status: missing.length === 0 ? "Eligibil" : totals.total >= 30 ? "Lipsesc condiții" : "Neeligibil",
-    missing
-  };
-}
+    .card h3 { margin-bottom: 14px; font-size: 18px; }
+    .metric { font-size: 30px; font-weight: 800; margin-top: 8px; }
+    .muted { color: var(--muted); }
 
-function statusBadge(status) {
-  if (status === "Eligibil") return <Badge className="rounded-full">Eligibil</Badge>;
-  if (status === "Lipsesc condiții") return <Badge variant="secondary" className="rounded-full">Lipsesc condiții</Badge>;
-  if (status === "Neeligibil") return <Badge variant="destructive" className="rounded-full">Neeligibil</Badge>;
-  return <Badge variant="outline" className="rounded-full">{status}</Badge>;
-}
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: white;
+    }
 
-function yesNo(value) {
-  return value ? "Da" : "Nu";
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1100px;
+    }
 
-export default function MontvarioManagementPortal() {
-  const [query, setQuery] = useState("");
-  const [rankFilter, setRankFilter] = useState("all");
-  const [selectedMember, setSelectedMember] = useState(members[0]);
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      vertical-align: top;
+    }
 
-  const filteredMembers = useMemo(() => {
-    return members.filter((member) => {
-      const matchesQuery =
-        member.nickname.toLowerCase().includes(query.toLowerCase()) ||
-        member.name.toLowerCase().includes(query.toLowerCase());
-      const matchesRank = rankFilter === "all" ? true : member.rank === rankFilter;
-      return matchesQuery && matchesRank;
-    });
-  }, [query, rankFilter]);
+    th {
+      background: var(--soft);
+      font-size: 13px;
+    }
 
-  const stats = useMemo(() => {
-    const totals = members.map((member) => ({
-      member,
-      breakdown: calculateBreakdown(member),
-      promo: promotionStatus(member)
-    }));
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
 
-    return {
-      totalMembers: members.length,
-      belowMinimum: totals.filter((x) => x.breakdown.total < 30).length,
-      eligible: totals.filter((x) => x.promo.status === "Eligibil").length,
-      missingConditions: totals.filter((x) => x.promo.status === "Lipsesc condiții").length,
-      inactive: totals.filter((x) => x.breakdown.total === 0).length,
-      byRank: RANKS.map((rank) => ({ rank, count: members.filter((m) => m.rank === rank).length }))
-    };
-  }, []);
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: white;
+      font: inherit;
+    }
 
-  const selectedBreakdown = calculateBreakdown(selectedMember);
-  const selectedPromotion = promotionStatus(selectedMember);
+    textarea { min-height: 42px; resize: vertical; }
 
-  return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Montvario Management Portal</h1>
-            <p className="text-sm text-slate-600">
-              Săptămâna de punctaj: duminică 18:00 → duminică 18:00
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="rounded-full px-3 py-1">Săpt. curentă activă</Badge>
-          </div>
-        </div>
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: white;
+    }
 
-        <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 rounded-2xl">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="guide">Ghid</TabsTrigger>
-            <TabsTrigger value="points">Evidență puncte</TabsTrigger>
-            <TabsTrigger value="members">Registru membri</TabsTrigger>
-            <TabsTrigger value="profile">Fișă membru</TabsTrigger>
-          </TabsList>
+    .badge.success { background: var(--success); color: var(--success-text); border-color: #bbf7d0; }
+    .badge.warning { background: var(--warning); color: var(--warning-text); border-color: #fde68a; }
+    .badge.danger { background: var(--danger); color: var(--danger-text); border-color: #fecaca; }
 
-          <TabsContent value="dashboard" className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-              <Card className="rounded-2xl shadow-sm">
-                <CardContent className="flex items-center gap-4 p-6">
-                  <Users className="h-8 w-8" />
-                  <div>
-                    <p className="text-sm text-slate-500">Total membri</p>
-                    <p className="text-2xl font-bold">{stats.totalMembers}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded-2xl shadow-sm">
-                <CardContent className="flex items-center gap-4 p-6">
-                  <AlertTriangle className="h-8 w-8" />
-                  <div>
-                    <p className="text-sm text-slate-500">Sub 30P</p>
-                    <p className="text-2xl font-bold">{stats.belowMinimum}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded-2xl shadow-sm">
-                <CardContent className="flex items-center gap-4 p-6">
-                  <CheckCircle2 className="h-8 w-8" />
-                  <div>
-                    <p className="text-sm text-slate-500">Eligibili</p>
-                    <p className="text-2xl font-bold">{stats.eligible}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded-2xl shadow-sm">
-                <CardContent className="flex items-center gap-4 p-6">
-                  <ClipboardList className="h-8 w-8" />
-                  <div>
-                    <p className="text-sm text-slate-500">Lipsesc condiții</p>
-                    <p className="text-2xl font-bold">{stats.missingConditions}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="rounded-2xl shadow-sm">
-                <CardContent className="flex items-center gap-4 p-6">
-                  <XCircle className="h-8 w-8" />
-                  <div>
-                    <p className="text-sm text-slate-500">Fără activitate</p>
-                    <p className="text-2xl font-bold">{stats.inactive}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+    .row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Card className="rounded-2xl shadow-sm">
-                <CardHeader>
-                  <CardTitle>Distribuție pe funcții</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {stats.byRank.map((item) => (
-                    <div key={item.rank} className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span>{item.rank}</span>
-                        <span className="font-medium">{item.count}</span>
-                      </div>
-                      <Progress value={(item.count / Math.max(stats.totalMembers, 1)) * 100} className="h-2" />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
+    .stack { display: grid; gap: 12px; }
+    .field { display: grid; gap: 6px; }
+    .field label { font-size: 14px; font-weight: 600; color: #334155; }
 
-              <Card className="rounded-2xl shadow-sm">
-                <CardHeader>
-                  <CardTitle>Alertă rapidă</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  {members.map((member) => {
-                    const breakdown = calculateBreakdown(member);
-                    const promo = promotionStatus(member);
-                    return (
-                      <div key={member.id} className="rounded-xl border bg-white p-3">
-                        <div className="flex items-center justify-between gap-3">
-                          <div>
-                            <p className="font-semibold">{member.nickname}</p>
-                            <p className="text-slate-500">{member.rank}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold">{breakdown.total}P</p>
-                            {statusBadge(promo.status)}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
 
-          <TabsContent value="guide">
-            <div className="grid gap-4 lg:grid-cols-2">
-              {GUIDE.map((section) => (
-                <Card key={section.rank} className="rounded-2xl shadow-sm">
-                  <CardHeader>
-                    <CardTitle>{section.rank}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4 text-sm">
-                    <p className="text-slate-600">{section.description}</p>
-                    <div>
-                      <p className="mb-2 font-semibold">Roluri</p>
-                      <ul className="list-disc space-y-1 pl-5 text-slate-700">
-                        {section.roles.map((role) => (
-                          <li key={role}>{role}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="mb-2 font-semibold">
-                        {section.promotionTo ? `Cerințe pentru promovare la ${section.promotionTo}` : "Cerințe pentru păstrarea rangului"}
-                      </p>
-                      <ul className="list-disc space-y-1 pl-5 text-slate-700">
-                        {section.requirements.map((requirement) => (
-                          <li key={requirement}>{requirement}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 14px;
+      background: white;
+    }
 
-          <TabsContent value="points" className="space-y-4">
-            <Card className="rounded-2xl shadow-sm">
-              <CardHeader>
-                <CardTitle>Evidență puncte pe membri</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="w-full whitespace-nowrap">
-                  <div className="min-w-[1200px] overflow-hidden rounded-xl border bg-white">
-                    <table className="w-full text-sm">
-                      <thead className="bg-slate-100 text-left">
-                        <tr>
-                          {[
-                            "Poreclă",
-                            "Anunțuri",
-                            "Angajare",
-                            "Contracte",
-                            "Activitate ilegală",
-                            "Activități LS",
-                            "Activități Cayo",
-                            "Evenimente",
-                            "Componente",
-                            "Săpt. curentă",
-                            "Săpt. trecută"
-                          ].map((header) => (
-                            <th key={header} className="px-4 py-3 font-semibold">{header}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredMembers.map((member) => {
-                          const b = calculateBreakdown(member);
-                          return (
-                            <tr key={member.id} className="border-t">
-                              <td className="px-4 py-3 font-medium">{member.nickname}</td>
-                              <td className="px-4 py-3">{b.announcements}</td>
-                              <td className="px-4 py-3">{b.recruit}</td>
-                              <td className="px-4 py-3">{b.contracts}</td>
-                              <td className="px-4 py-3">{b.illegal}</td>
-                              <td className="px-4 py-3">{b.ls}</td>
-                              <td className="px-4 py-3">{b.cayo}</td>
-                              <td className="px-4 py-3">{b.events}</td>
-                              <td className="px-4 py-3">{b.components}</td>
-                              <td className="px-4 py-3 font-semibold">{b.total}</td>
-                              <td className="px-4 py-3">{b.previous}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
+    .split {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
 
-          <TabsContent value="members" className="space-y-4">
-            <Card className="rounded-2xl shadow-sm">
-              <CardHeader>
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                  <CardTitle>Registru membri</CardTitle>
-                  <div className="flex flex-col gap-3 md:flex-row">
-                    <div className="relative min-w-[260px]">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                      <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Caută după poreclă sau nume" className="pl-9" />
-                    </div>
-                    <Select value={rankFilter} onValueChange={setRankFilter}>
-                      <SelectTrigger className="w-[220px]">
-                        <SelectValue placeholder="Filtrează funcția" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Toate funcțiile</SelectItem>
-                        {RANKS.map((rank) => (
-                          <SelectItem key={rank} value={rank}>{rank}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="w-full whitespace-nowrap">
-                  <div className="min-w-[1500px] overflow-hidden rounded-xl border bg-white">
-                    <table className="w-full text-sm">
-                      <thead className="bg-slate-100 text-left">
-                        <tr>
-                          {[
-                            "Poreclă",
-                            "Nume",
-                            "Funcția",
-                            "CNP",
-                            "Luni",
-                            "Tel.",
-                            "Nr. Mașină",
-                            "Data angajare",
-                            "Ultima avansare",
-                            "Buletin",
-                            "HS",
-                            "Pilot",
-                            "RF LS",
-                            "Elicopter LS",
-                            "Heli",
-                            "Status"
-                          ].map((header) => (
-                            <th key={header} className="px-4 py-3 font-semibold">{header}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredMembers.map((member) => (
-                          <tr key={member.id} className="border-t">
-                            <td className="px-4 py-3 font-medium">{member.nickname}</td>
-                            <td className="px-4 py-3">{member.name}</td>
-                            <td className="px-4 py-3">{member.rank}</td>
-                            <td className="px-4 py-3">{member.cnp}</td>
-                            <td className="px-4 py-3">{member.months}</td>
-                            <td className="px-4 py-3">{member.phone}</td>
-                            <td className="px-4 py-3">{member.carNumber}</td>
-                            <td className="px-4 py-3">{member.hireDate}</td>
-                            <td className="px-4 py-3">{member.lastPromotion}</td>
-                            <td className="px-4 py-3">
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button variant="outline" size="sm" className="rounded-full">Vezi buletin</Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Buletin - {member.nickname}</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-3 text-sm">
-                                    <p>Link imagine:</p>
-                                    <a href={member.bulletinUrl} target="_blank" rel="noreferrer" className="break-all text-blue-600 underline">
-                                      {member.bulletinUrl}
-                                    </a>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                            </td>
-                            <td className="px-4 py-3">{yesNo(member.hs)}</td>
-                            <td className="px-4 py-3">{yesNo(member.pilot)}</td>
-                            <td className="px-4 py-3">{yesNo(member.rfLs)}</td>
-                            <td className="px-4 py-3">{yesNo(member.elicopterLs)}</td>
-                            <td className="px-4 py-3">{yesNo(member.heli)}</td>
-                            <td className="px-4 py-3"><Badge variant="outline" className="rounded-full">{member.status}</Badge></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
+    .three {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
 
-          <TabsContent value="profile" className="space-y-6">
-            <Card className="rounded-2xl shadow-sm">
-              <CardHeader>
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                  <CardTitle>Fișă membru</CardTitle>
-                  <Select value={String(selectedMember.id)} onValueChange={(id) => setSelectedMember(members.find((m) => String(m.id) === id) || members[0])}>
-                    <SelectTrigger className="w-[260px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {members.map((member) => (
-                        <SelectItem key={member.id} value={String(member.id)}>
-                          {member.nickname} · {member.rank}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardHeader>
-              <CardContent className="grid gap-6 lg:grid-cols-3">
-                <Card className="rounded-2xl border shadow-none lg:col-span-1">
-                  <CardHeader>
-                    <CardTitle>{selectedMember.nickname}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 text-sm text-slate-700">
-                    <p><span className="font-semibold">Nume:</span> {selectedMember.name}</p>
-                    <p><span className="font-semibold">Funcție:</span> {selectedMember.rank}</p>
-                    <p><span className="font-semibold">Data angajare:</span> {selectedMember.hireDate}</p>
-                    <p><span className="font-semibold">Ultima avansare:</span> {selectedMember.lastPromotion}</p>
-                    <p><span className="font-semibold">Mentor:</span> {selectedMember.mentor}</p>
-                    <p><span className="font-semibold">Sold bancă:</span> {selectedMember.bankBalance.toLocaleString("ro-RO")} $</p>
-                    <p><span className="font-semibold">Arme mici:</span> {selectedMember.smallWeapons}</p>
-                    <p><span className="font-semibold">Arme mari:</span> {selectedMember.bigWeapons}</p>
-                  </CardContent>
-                </Card>
+    ul.clean {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+      color: #334155;
+      font-size: 14px;
+    }
 
-                <Card className="rounded-2xl border shadow-none lg:col-span-1">
-                  <CardHeader>
-                    <CardTitle>Punctaj</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3 text-sm">
-                    <div className="flex items-center justify-between"><span>Săpt. curentă</span><span className="font-semibold">{selectedBreakdown.total}P</span></div>
-                    <div className="flex items-center justify-between"><span>Săpt. trecută</span><span className="font-semibold">{selectedBreakdown.previous}P</span></div>
-                    <div className="flex items-center justify-between"><span>Activitate ilegală</span><span>{selectedBreakdown.illegal}P</span></div>
-                    <div className="flex items-center justify-between"><span>Activități LS</span><span>{selectedBreakdown.ls}P</span></div>
-                    <div className="flex items-center justify-between"><span>Activități Cayo</span><span>{selectedBreakdown.cayo}P</span></div>
-                    <div className="flex items-center justify-between"><span>Evenimente</span><span>{selectedBreakdown.events}P</span></div>
-                    <div className="flex items-center justify-between"><span>Componente</span><span>{selectedBreakdown.components}P</span></div>
-                  </CardContent>
-                </Card>
+    .mini-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: white;
+    }
 
-                <Card className="rounded-2xl border shadow-none lg:col-span-1">
-                  <CardHeader>
-                    <CardTitle>Promovare</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span>Status</span>
-                      {statusBadge(selectedPromotion.status)}
-                    </div>
-                    <div>
-                      <p className="mb-2 font-semibold">Ce lipsește</p>
-                      {selectedPromotion.missing.length === 0 ? (
-                        <p className="text-slate-600">Toate condițiile sunt îndeplinite.</p>
-                      ) : (
-                        <ul className="list-disc space-y-1 pl-5 text-slate-700">
-                          {selectedPromotion.missing.map((item) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+    .progress {
+      height: 8px;
+      width: 100%;
+      background: var(--soft);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
 
-                <Card className="rounded-2xl border shadow-none lg:col-span-3">
-                  <CardHeader>
-                    <CardTitle>Documente și licențe</CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid gap-3 md:grid-cols-4 text-sm">
-                    <div className="rounded-xl border p-3">Buletin: <span className="font-semibold">Link imagine</span></div>
-                    <div className="rounded-xl border p-3">HS: <span className="font-semibold">{yesNo(selectedMember.hs)}</span></div>
-                    <div className="rounded-xl border p-3">Pilot: <span className="font-semibold">{yesNo(selectedMember.pilot)}</span></div>
-                    <div className="rounded-xl border p-3">RF LS: <span className="font-semibold">{yesNo(selectedMember.rfLs)}</span></div>
-                    <div className="rounded-xl border p-3">Elicopter LS: <span className="font-semibold">{yesNo(selectedMember.elicopterLs)}</span></div>
-                    <div className="rounded-xl border p-3">Heli: <span className="font-semibold">{yesNo(selectedMember.heli)}</span></div>
-                    <div className="rounded-xl border p-3">Certificat locații: <span className="font-semibold">{yesNo(selectedMember.locationCertificate)}</span></div>
-                    <div className="rounded-xl border p-3">Certificat Gunner: <span className="font-semibold">{yesNo(selectedMember.gunnerCertificate)}</span></div>
-                  </CardContent>
-                </Card>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+    .progress span {
+      display: block;
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+    }
+
+    .hidden { display: none !important; }
+
+    .notice {
+      margin-left: 8px;
+      color: var(--success-text);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .link-btn {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .profile-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .doc-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media (max-width: 1100px) {
+      .grid.cards-5, .grid.cards-4, .grid.cards-3, .checkbox-grid, .doc-grid, .profile-grid, .three, .split, .grid.cards-2 {
+        grid-template-columns: 1fr;
+      }
+      .tabs { grid-template-columns: repeat(2, 1fr); }
+      .topbar { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <h1>Montvario Management Portal</h1>
+        <p class="subtitle">Administrare membri, puncte și eligibilitate promovare.</p>
+      </div>
+      <div>
+        <button class="btn" id="addMemberBtn">Adaugă membru</button>
       </div>
     </div>
-  );
-}
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="guide">Ghid</button>
+      <button class="tab-btn" data-tab="points">Evidență puncte</button>
+      <button class="tab-btn" data-tab="members">Registru membri</button>
+      <button class="tab-btn" data-tab="profile">Fișă membru</button>
+      <button class="tab-btn" data-tab="editor">Editor</button>
+    </div>
+
+    <section id="dashboard" class="tab-content active"></section>
+    <section id="guide" class="tab-content"></section>
+    <section id="points" class="tab-content"></section>
+    <section id="members" class="tab-content"></section>
+    <section id="profile" class="tab-content"></section>
+    <section id="editor" class="tab-content"></section>
+  </div>
+
+  <script>
+    const RANKS = ["Șef de tură", "Supervizor", "Manager", "Asociat", "Made Man"];
+    const STATUSES = ["Activ", "Inactiv", "În concediu", "Suspendat"];
+
+    const GUIDE = [
+      {
+        rank: "Șef de tură",
+        description: "Primul pas în lumea ilegalităților. Are încă o legătură strânsă cu service-ul și ghidează mecanicii.",
+        roles: [
+          "Ghidează mecanicii și gestionează activitățile la service",
+          "Participă în mare parte la activități legale",
+          "Învață partea ilegală și participă în limita posibilităților"
+        ],
+        promotionTo: "Supervizor",
+        requirements: [
+          "Minim 30P",
+          "Minim o săptămână vechime",
+          "1 contract de livrare",
+          "Mașină HS",
+          "Cunoașterea zonei Industrială Sud",
+          "Minim 3 anunțuri de angajare"
+        ]
+      },
+      {
+        rank: "Supervizor",
+        description: "Are deja o cunoștință de bază asupra părții ilegale și participă la activități mai complexe.",
+        roles: [
+          "Ajută Șefii de Tură pe partea legală",
+          "Cunoaște de bază partea ilegală și zonele orașului",
+          "Organizează sau participă la răpiri"
+        ],
+        promotionTo: "Manager",
+        requirements: [
+          "Minim 30P",
+          "RF LS pe o mașină HS",
+          "Minim 2 contracte de livrare",
+          "Minim 2 săptămâni vechime sau o săptămână cu minim 60P",
+          "Minim 1 armă mică și 1 armă mare",
+          "Minim 1 angajare",
+          "Minim 3 anunțuri de angajare"
+        ]
+      },
+      {
+        rank: "Manager",
+        description: "Intermediar între partea legală și ilegală. Coordonează activități legale sau ilegale reduse.",
+        roles: [
+          "Coordonează Șefii de Tură",
+          "Coordonează acțiuni",
+          "Organizează transporturi și mici lovituri"
+        ],
+        promotionTo: "Asociat",
+        requirements: [
+          "Minim 30P",
+          "Certificat locații",
+          "Licență Heli",
+          "2 acțiuni ilegale în 2 săptămâni",
+          "2 săptămâni consecutive cu minimul atins sau minim 80P",
+          "Minim 6 contracte de livrare",
+          "Minim 2 arme mici și 2 arme mari",
+          "Licență Pilot HS",
+          "1M în bancă",
+          "Minim 3 angajări",
+          "Minim 3 anunțuri de angajare",
+          "RF pe o mașină extreme"
+        ]
+      },
+      {
+        rank: "Asociat",
+        description: "Nu mai are legătură cu afacerile legale. Se concentrează pe sarcini ilegale de bază.",
+        roles: [
+          "Participă activ la jafuri și acțiuni organizate",
+          "Conduce pe teren sub supravegherea unui Made Man",
+          "Poate propune recruți cu acord Made Man"
+        ],
+        promotionTo: "Made Man",
+        requirements: [
+          "Minim 30P",
+          "Minim 5 arme (2x Tec9 + 3x AK/Advanced) full",
+          "Certificat Gunner",
+          "Minim 2M în bancă",
+          "Elicopter LS",
+          "4 acțiuni ilegale în 3 săptămâni",
+          "Minim 3 angajări",
+          "Minim 3 săptămâni vechime sau 2 săptămâni cu minim 70P",
+          "Seriozitate și implicare"
+        ]
+      },
+      {
+        rank: "Made Man",
+        description: "Are responsabilități semnificative, loialitate absolută și devine model pentru ceilalți.",
+        roles: [
+          "Conduce și organizează acțiuni importante",
+          "Propune membri pentru inițiere și se ocupă de inițiere",
+          "Reprezintă familia mică în fața conducerii"
+        ],
+        promotionTo: null,
+        requirements: [
+          "Loialitate totală",
+          "Activitate constantă",
+          "Își atinge minimul de puncte",
+          "Implicare constantă",
+          "Seriozitate"
+        ]
+      }
+    ];
+
+    const defaultMembers = [
+      {
+        id: 1,
+        nickname: "Raven",
+        name: "Mihai Popescu",
+        rank: "Șef de tură",
+        cnp: "1980101123456",
+        months: 1,
+        phone: "0712 000 111",
+        carNumber: "B-99-MTV",
+        hireDate: "2026-02-20",
+        lastPromotion: "2026-02-20",
+        bulletinUrl: "https://example.com/buletin-raven.jpg",
+        hs: true,
+        pilot: false,
+        rfLs: false,
+        elicopterLs: false,
+        heli: false,
+        pilotHs: false,
+        status: "Activ",
+        mentor: "Viper",
+        knowsIndustrialSouth: true,
+        locationCertificate: false,
+        gunnerCertificate: false,
+        smallWeapons: 1,
+        bigWeapons: 0,
+        bankBalance: 450000,
+        notes: "",
+        points: { announcements: 3, recruit: 1, contracts: 2, illegal: 5, ls: 8, cayo: 1, events: 2, components: 3, currentWeek: 25, previousWeek: 24 }
+      },
+      {
+        id: 2,
+        nickname: "Viper",
+        name: "Andrei Ionescu",
+        rank: "Manager",
+        cnp: "1970202123456",
+        months: 3,
+        phone: "0722 111 222",
+        carNumber: "B-11-MTV",
+        hireDate: "2025-12-10",
+        lastPromotion: "2026-02-01",
+        bulletinUrl: "https://example.com/buletin-viper.jpg",
+        hs: true,
+        pilot: true,
+        rfLs: true,
+        elicopterLs: false,
+        heli: true,
+        pilotHs: true,
+        status: "Activ",
+        mentor: "Belvarro",
+        knowsIndustrialSouth: true,
+        locationCertificate: true,
+        gunnerCertificate: false,
+        smallWeapons: 2,
+        bigWeapons: 2,
+        bankBalance: 1350000,
+        notes: "Foarte activ pe LS.",
+        points: { announcements: 4, recruit: 6, contracts: 12, illegal: 20, ls: 18, cayo: 6, events: 2, components: 6, currentWeek: 74, previousWeek: 68 }
+      },
+      {
+        id: 3,
+        nickname: "Ghost",
+        name: "Robert Marin",
+        rank: "Asociat",
+        cnp: "1960612123456",
+        months: 5,
+        phone: "0733 444 555",
+        carNumber: "B-77-MTV",
+        hireDate: "2025-11-15",
+        lastPromotion: "2026-01-28",
+        bulletinUrl: "https://example.com/buletin-ghost.jpg",
+        hs: true,
+        pilot: true,
+        rfLs: true,
+        elicopterLs: true,
+        heli: true,
+        pilotHs: true,
+        status: "Activ",
+        mentor: "Belvarro",
+        knowsIndustrialSouth: true,
+        locationCertificate: true,
+        gunnerCertificate: true,
+        smallWeapons: 3,
+        bigWeapons: 3,
+        bankBalance: 2450000,
+        notes: "Pregătit pentru verificare Made Man.",
+        points: { announcements: 3, recruit: 11, contracts: 8, illegal: 30, ls: 12, cayo: 7, events: 3, components: 10, currentWeek: 84, previousWeek: 74 }
+      }
+    ];
+
+    let members = loadMembers();
+    let selectedMemberId = members[0]?.id || 1;
+    let editingId = members[0]?.id || 1;
+    let query = "";
+    let rankFilter = "all";
+    let isCreating = false;
+
+    function loadMembers() {
+      try {
+        const raw = localStorage.getItem("montvario-members-html");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length) return parsed;
+        }
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(defaultMembers));
+    }
+
+    function saveMembers() {
+      localStorage.setItem("montvario-members-html", JSON.stringify(members));
+    }
+
+    function getNextRank(rank) {
+      const index = RANKS.indexOf(rank);
+      if (index < 0 || index === RANKS.length - 1) return null;
+      return RANKS[index + 1];
+    }
+
+    function numberValue(value) {
+      const n = Number(value);
+      return Number.isNaN(n) ? 0 : n;
+    }
+
+    function statusBadge(status) {
+      if (status === "Eligibil") return `<span class="badge success">Eligibil</span>`;
+      if (status === "Lipsesc condiții") return `<span class="badge warning">Lipsesc condiții</span>`;
+      if (status === "Neeligibil") return `<span class="badge danger">Neeligibil</span>`;
+      return `<span class="badge">${status}</span>`;
+    }
+
+    function boolText(value) {
+      return value ? "Da" : "Nu";
+    }
+
+    function promotionStatus(member) {
+      const next = getNextRank(member.rank);
+      if (!next) return { status: "Top rank", missing: [] };
+
+      const currentWeek = numberValue(member.points.currentWeek);
+      const previousWeek = numberValue(member.points.previousWeek);
+      const missing = [];
+
+      if (currentWeek < 30) missing.push(`Îi mai lipsesc ${30 - currentWeek} puncte`);
+
+      if (member.rank === "Șef de tură") {
+        if (numberValue(member.months) < 1) missing.push("Minim o săptămână vechime");
+        if (numberValue(member.points.contracts) <= 0) missing.push("1 contract de livrare");
+        if (!member.hs) missing.push("Mașină HS");
+        if (!member.knowsIndustrialSouth) missing.push("Cunoașterea zonei Industrială Sud");
+        if (numberValue(member.points.announcements) < 3) missing.push("3 anunțuri de angajare");
+      }
+
+      if (member.rank === "Supervizor") {
+        if (!member.rfLs) missing.push("RF LS pe o mașină HS");
+        if (numberValue(member.points.contracts) < 2) missing.push("2 contracte de livrare");
+        if (numberValue(member.months) < 2 && previousWeek < 60) missing.push("2 săptămâni vechime sau o săptămână cu 60P");
+        if (numberValue(member.smallWeapons) < 1) missing.push("1 armă mică");
+        if (numberValue(member.bigWeapons) < 1) missing.push("1 armă mare");
+        if (numberValue(member.points.recruit) < 1) missing.push("1 angajare");
+        if (numberValue(member.points.announcements) < 3) missing.push("3 anunțuri de angajare");
+      }
+
+      if (member.rank === "Manager") {
+        if (!member.locationCertificate) missing.push("Certificat locații");
+        if (!member.heli) missing.push("Licență Heli");
+        if (numberValue(member.points.illegal) <= 0) missing.push("2 acțiuni ilegale în 2 săptămâni");
+        if (!(currentWeek >= 80 || (currentWeek >= 30 && previousWeek >= 30))) missing.push("80P sau 2 săptămâni consecutive cu minimul atins");
+        if (numberValue(member.points.contracts) < 6) missing.push("6 contracte de livrare");
+        if (numberValue(member.smallWeapons) < 2) missing.push("2 arme mici");
+        if (numberValue(member.bigWeapons) < 2) missing.push("2 arme mari");
+        if (!member.pilotHs) missing.push("Licență Pilot HS");
+        if (numberValue(member.bankBalance) < 1000000) missing.push("1M în bancă");
+        if (numberValue(member.points.recruit) < 3) missing.push("3 angajări");
+        if (numberValue(member.points.announcements) < 3) missing.push("3 anunțuri de angajare");
+        if (!member.rfLs) missing.push("RF pe mașină extreme");
+      }
+
+      if (member.rank === "Asociat") {
+        if (numberValue(member.smallWeapons) < 2 || numberValue(member.bigWeapons) < 3) missing.push("5 arme totale (2 mici + 3 mari)");
+        if (!member.gunnerCertificate) missing.push("Certificat Gunner");
+        if (numberValue(member.bankBalance) < 2000000) missing.push("2M în bancă");
+        if (!member.elicopterLs) missing.push("Elicopter LS");
+        if (numberValue(member.points.illegal) < 20) missing.push("4 acțiuni ilegale în 3 săptămâni");
+        if (numberValue(member.points.recruit) < 3) missing.push("3 angajări");
+        if (!(numberValue(member.months) >= 3 || (currentWeek >= 70 && previousWeek >= 70))) missing.push("3 săptămâni vechime sau 2 săptămâni cu minim 70P");
+      }
+
+      return {
+        status: missing.length === 0 ? "Eligibil" : currentWeek >= 30 ? "Lipsesc condiții" : "Neeligibil",
+        missing
+      };
+    }
+
+    function getSelectedMember() {
+      return members.find(m => m.id === selectedMemberId) || members[0] || null;
+    }
+
+    function getEditingMember() {
+      return members.find(m => m.id === editingId) || null;
+    }
+
+    function filteredMembers() {
+      return members.filter(member => {
+        const matchesQuery = `${member.nickname} ${member.name}`.toLowerCase().includes(query.toLowerCase());
+        const matchesRank = rankFilter === "all" ? true : member.rank === rankFilter;
+        return matchesQuery && matchesRank;
+      });
+    }
+
+    function renderDashboard() {
+      const eligible = members.filter(m => promotionStatus(m).status === "Eligibil").length;
+      const missingConditions = members.filter(m => promotionStatus(m).status === "Lipsesc condiții").length;
+      const belowMinimum = members.filter(m => numberValue(m.points.currentWeek) < 30).length;
+      const inactive = members.filter(m => numberValue(m.points.currentWeek) === 0).length;
+
+      document.getElementById("dashboard").innerHTML = `
+        <div class="grid cards-5">
+          <div class="card"><div class="muted">Total membri</div><div class="metric">${members.length}</div></div>
+          <div class="card"><div class="muted">Sub 30P</div><div class="metric">${belowMinimum}</div></div>
+          <div class="card"><div class="muted">Eligibili</div><div class="metric">${eligible}</div></div>
+          <div class="card"><div class="muted">Lipsesc condiții</div><div class="metric">${missingConditions}</div></div>
+          <div class="card"><div class="muted">Fără activitate</div><div class="metric">${inactive}</div></div>
+        </div>
+        <div class="grid cards-2" style="margin-top:16px;">
+          <div class="card">
+            <h3>Distribuție pe funcții</h3>
+            <div class="stack">
+              ${RANKS.map(rank => {
+                const count = members.filter(m => m.rank === rank).length;
+                const width = members.length ? (count / members.length) * 100 : 0;
+                return `
+                  <div>
+                    <div class="row-between"><span>${rank}</span><strong>${count}</strong></div>
+                    <div class="progress"><span style="width:${width}%"></span></div>
+                  </div>`;
+              }).join("")}
+            </div>
+          </div>
+          <div class="card">
+            <h3>Alertă rapidă</h3>
+            <div class="stack">
+              ${members.map(member => {
+                const promo = promotionStatus(member);
+                return `
+                  <div class="mini-card">
+                    <div class="row-between">
+                      <div>
+                        <div><strong>${member.nickname || "Fără poreclă"}</strong></div>
+                        <div class="muted">${member.rank}</div>
+                      </div>
+                      <div style="text-align:right;">
+                        <div><strong>${numberValue(member.points.currentWeek)}P</strong></div>
+                        <div style="margin-top:6px;">${statusBadge(promo.status)}</div>
+                      </div>
+                    </div>
+                  </div>`;
+              }).join("")}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderGuide() {
+      document.getElementById("guide").innerHTML = `
+        <div class="grid cards-2">
+          ${GUIDE.map(section => `
+            <div class="card">
+              <h3>${section.rank}</h3>
+              <p class="muted" style="margin-bottom:14px;">${section.description}</p>
+              <div class="stack">
+                <div>
+                  <strong>Roluri</strong>
+                  <ul class="clean" style="margin-top:8px;">
+                    ${section.roles.map(role => `<li>${role}</li>`).join("")}
+                  </ul>
+                </div>
+                <div>
+                  <strong>${section.promotionTo ? `Cerințe pentru promovare la ${section.promotionTo}` : "Cerințe pentru păstrarea rangului"}</strong>
+                  <ul class="clean" style="margin-top:8px;">
+                    ${section.requirements.map(req => `<li>${req}</li>`).join("")}
+                  </ul>
+                </div>
+              </div>
+            </div>`).join("")}
+        </div>`;
+    }
+
+    function renderPoints() {
+      document.getElementById("points").innerHTML = `
+        <div class="card">
+          <h3>Evidență puncte pe membri</h3>
+          <div class="table-wrap" style="margin-top:14px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Poreclă</th>
+                  <th>Anunțuri de angajare</th>
+                  <th>Angajare</th>
+                  <th>Contracte de livrare</th>
+                  <th>Activitate ilegală</th>
+                  <th>Activități LS</th>
+                  <th>Activități Cayo</th>
+                  <th>Evenimente</th>
+                  <th>Componente</th>
+                  <th>Săpt. curentă</th>
+                  <th>Săpt. trecută</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filteredMembers().map(member => `
+                  <tr>
+                    <td><strong>${member.nickname}</strong></td>
+                    <td>${numberValue(member.points.announcements)}</td>
+                    <td>${numberValue(member.points.recruit)}</td>
+                    <td>${numberValue(member.points.contracts)}</td>
+                    <td>${numberValue(member.points.illegal)}</td>
+                    <td>${numberValue(member.points.ls)}</td>
+                    <td>${numberValue(member.points.cayo)}</td>
+                    <td>${numberValue(member.points.events)}</td>
+                    <td>${numberValue(member.points.components)}</td>
+                    <td><strong>${numberValue(member.points.currentWeek)}</strong></td>
+                    <td>${numberValue(member.points.previousWeek)}</td>
+                  </tr>`).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+
+    function renderMembers() {
+      document.getElementById("members").innerHTML = `
+        <div class="card">
+          <div class="row-between" style="margin-bottom:16px; flex-wrap:wrap; align-items:flex-end;">
+            <div>
+              <h3>Registru membri</h3>
+            </div>
+            <div class="controls">
+              <div style="min-width:260px;"><input id="searchInput" placeholder="Caută după poreclă sau nume" value="${escapeHtml(query)}"></div>
+              <div style="min-width:220px;">
+                <select id="rankFilter">
+                  <option value="all">Toate funcțiile</option>
+                  ${RANKS.map(rank => `<option value="${rank}" ${rankFilter === rank ? "selected" : ""}>${rank}</option>`).join("")}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Poreclă</th>
+                  <th>Nume</th>
+                  <th>Funcția</th>
+                  <th>CNP</th>
+                  <th>Luni</th>
+                  <th>Tel.</th>
+                  <th>Nr. Mașină</th>
+                  <th>Data angajare</th>
+                  <th>Ultima avansare</th>
+                  <th>Buletin</th>
+                  <th>HS</th>
+                  <th>Pilot</th>
+                  <th>RF LS</th>
+                  <th>Elicopter LS</th>
+                  <th>Heli</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filteredMembers().map(member => `
+                  <tr>
+                    <td><strong>${member.nickname}</strong></td>
+                    <td>${member.name}</td>
+                    <td>${member.rank}</td>
+                    <td>${member.cnp}</td>
+                    <td>${numberValue(member.months)}</td>
+                    <td>${member.phone}</td>
+                    <td>${member.carNumber}</td>
+                    <td>${member.hireDate || "—"}</td>
+                    <td>${member.lastPromotion || "—"}</td>
+                    <td>${member.bulletinUrl ? `<a href="${member.bulletinUrl}" target="_blank"><button class="link-btn" type="button">Vezi buletin</button></a>` : "—"}</td>
+                    <td>${boolText(member.hs)}</td>
+                    <td>${boolText(member.pilot)}</td>
+                    <td>${boolText(member.rfLs)}</td>
+                    <td>${boolText(member.elicopterLs)}</td>
+                    <td>${boolText(member.heli)}</td>
+                    <td><span class="badge">${member.status}</span></td>
+                  </tr>`).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+
+      document.getElementById("searchInput").addEventListener("input", e => {
+        query = e.target.value;
+        renderMembers();
+        renderPoints();
+      });
+      document.getElementById("rankFilter").addEventListener("change", e => {
+        rankFilter = e.target.value;
+        renderMembers();
+        renderPoints();
+      });
+    }
+
+    function renderProfile() {
+      const selected = getSelectedMember();
+      if (!selected) {
+        document.getElementById("profile").innerHTML = `<div class="card"><p>Nu există membri.</p></div>`;
+        return;
+      }
+      const promo = promotionStatus(selected);
+      document.getElementById("profile").innerHTML = `
+        <div class="card">
+          <div class="row-between" style="margin-bottom:16px; flex-wrap:wrap; align-items:flex-end;">
+            <h3>Fișă membru</h3>
+            <div style="min-width:260px;">
+              <select id="profileSelect">
+                ${members.map(member => `<option value="${member.id}" ${member.id === selected.id ? "selected" : ""}>${member.nickname || "Fără poreclă"} · ${member.rank}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="card" style="box-shadow:none;">
+              <h3>${selected.nickname || "Fără poreclă"}</h3>
+              <div class="stack muted" style="color:#334155;">
+                <div><strong>Nume:</strong> ${selected.name || "—"}</div>
+                <div><strong>Funcție:</strong> ${selected.rank}</div>
+                <div><strong>Data angajare:</strong> ${selected.hireDate || "—"}</div>
+                <div><strong>Ultima avansare:</strong> ${selected.lastPromotion || "—"}</div>
+                <div><strong>Mentor:</strong> ${selected.mentor || "—"}</div>
+                <div><strong>Sold bancă:</strong> ${numberValue(selected.bankBalance).toLocaleString("ro-RO")} $</div>
+                <div><strong>Arme mici:</strong> ${numberValue(selected.smallWeapons)}</div>
+                <div><strong>Arme mari:</strong> ${numberValue(selected.bigWeapons)}</div>
+              </div>
+            </div>
+            <div class="card" style="box-shadow:none;">
+              <h3>Punctaj</h3>
+              <div class="stack">
+                <div class="row-between"><span>Săpt. curentă</span><strong>${numberValue(selected.points.currentWeek)}P</strong></div>
+                <div class="row-between"><span>Săpt. trecută</span><strong>${numberValue(selected.points.previousWeek)}P</strong></div>
+                <div class="row-between"><span>Activitate ilegală</span><span>${numberValue(selected.points.illegal)}P</span></div>
+                <div class="row-between"><span>Activități LS</span><span>${numberValue(selected.points.ls)}P</span></div>
+                <div class="row-between"><span>Activități Cayo</span><span>${numberValue(selected.points.cayo)}P</span></div>
+                <div class="row-between"><span>Evenimente</span><span>${numberValue(selected.points.events)}P</span></div>
+                <div class="row-between"><span>Componente</span><span>${numberValue(selected.points.components)}P</span></div>
+              </div>
+            </div>
+            <div class="card" style="box-shadow:none;">
+              <h3>Promovare</h3>
+              <div class="stack">
+                <div class="row-between"><span>Status</span>${statusBadge(promo.status)}</div>
+                <div>
+                  <strong>Ce lipsește</strong>
+                  ${promo.missing.length ? `<ul class="clean" style="margin-top:8px;">${promo.missing.map(item => `<li>${item}</li>`).join("")}</ul>` : `<p class="muted" style="margin-top:8px;">Toate condițiile sunt îndeplinite.</p>`}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="box-shadow:none; margin-top:16px;">
+            <h3>Documente și licențe</h3>
+            <div class="doc-grid" style="margin-top:12px;">
+              <div class="mini-card">Buletin: <strong>${selected.bulletinUrl ? "Link imagine" : "Lipsă"}</strong></div>
+              <div class="mini-card">HS: <strong>${boolText(selected.hs)}</strong></div>
+              <div class="mini-card">Pilot: <strong>${boolText(selected.pilot)}</strong></div>
+              <div class="mini-card">RF LS: <strong>${boolText(selected.rfLs)}</strong></div>
+              <div class="mini-card">Elicopter LS: <strong>${boolText(selected.elicopterLs)}</strong></div>
+              <div class="mini-card">Heli: <strong>${boolText(selected.heli)}</strong></div>
+              <div class="mini-card">Certificat locații: <strong>${boolText(selected.locationCertificate)}</strong></div>
+              <div class="mini-card">Certificat Gunner: <strong>${boolText(selected.gunnerCertificate)}</strong></div>
+            </div>
+          </div>
+        </div>`;
+
+      document.getElementById("profileSelect").addEventListener("change", e => {
+        selectedMemberId = Number(e.target.value);
+        editingId = selectedMemberId;
+        isCreating = false;
+        renderProfile();
+        renderEditor();
+      });
+    }
+
+    function emptyMember(nextId) {
+      return {
+        id: nextId,
+        nickname: "",
+        name: "",
+        rank: "Șef de tură",
+        cnp: "",
+        months: 0,
+        phone: "",
+        carNumber: "",
+        hireDate: "",
+        lastPromotion: "",
+        bulletinUrl: "",
+        hs: false,
+        pilot: false,
+        rfLs: false,
+        elicopterLs: false,
+        heli: false,
+        pilotHs: false,
+        status: "Activ",
+        mentor: "",
+        knowsIndustrialSouth: false,
+        locationCertificate: false,
+        gunnerCertificate: false,
+        smallWeapons: 0,
+        bigWeapons: 0,
+        bankBalance: 0,
+        notes: "",
+        points: { announcements: 0, recruit: 0, contracts: 0, illegal: 0, ls: 0, cayo: 0, events: 0, components: 0, currentWeek: 0, previousWeek: 0 }
+      };
+    }
+
+    function renderEditor() {
+      let member = getEditingMember();
+      if (!member && members.length) member = members[0];
+      if (!member) {
+        const fresh = emptyMember(1);
+        members = [fresh];
+        member = fresh;
+      }
+      const promo = promotionStatus(member);
+
+      document.getElementById("editor").innerHTML = `
+        <div class="card">
+          <div class="row-between" style="margin-bottom:16px; flex-wrap:wrap; align-items:flex-end;">
+            <div>
+              <h3>${isCreating ? "Adaugă membru" : `Editează membru · ${member.nickname || "Fără poreclă"}`}</h3>
+            </div>
+            <div>
+              <button class="btn" id="saveEditorBtn">Salvează</button>
+              <span class="notice" id="saveNotice"></span>
+            </div>
+          </div>
+
+          <div class="grid cards-4">
+            ${field("Poreclă", `<input id="f_nickname" value="${escapeHtml(member.nickname)}">`)}
+            ${field("Nume", `<input id="f_name" value="${escapeHtml(member.name)}">`)}
+            ${field("Funcția", `<select id="f_rank">${RANKS.map(rank => `<option value="${rank}" ${member.rank === rank ? "selected" : ""}>${rank}</option>`).join("")}</select>`)}
+            ${field("Status", `<select id="f_status">${STATUSES.map(status => `<option value="${status}" ${member.status === status ? "selected" : ""}>${status}</option>`).join("")}</select>`)}
+            ${field("CNP", `<input id="f_cnp" value="${escapeHtml(member.cnp)}">`)}
+            ${field("Luni", `<input type="number" id="f_months" value="${numberValue(member.months)}">`)}
+            ${field("Tel.", `<input id="f_phone" value="${escapeHtml(member.phone)}">`)}
+            ${field("Nr. Mașină", `<input id="f_carNumber" value="${escapeHtml(member.carNumber)}">`)}
+            ${field("Data angajare", `<input type="date" id="f_hireDate" value="${member.hireDate || ""}">`)}
+            ${field("Ultima avansare", `<input type="date" id="f_lastPromotion" value="${member.lastPromotion || ""}">`)}
+            ${field("Buletin - link poză", `<input id="f_bulletinUrl" value="${escapeHtml(member.bulletinUrl)}">`)}
+            ${field("Mentor", `<input id="f_mentor" value="${escapeHtml(member.mentor)}">`)}
+            ${field("Arme mici", `<input type="number" id="f_smallWeapons" value="${numberValue(member.smallWeapons)}">`)}
+            ${field("Arme mari", `<input type="number" id="f_bigWeapons" value="${numberValue(member.bigWeapons)}">`)}
+            ${field("Sold bancă", `<input type="number" id="f_bankBalance" value="${numberValue(member.bankBalance)}">`)}
+            ${field("Observații", `<textarea id="f_notes">${escapeHtml(member.notes || "")}</textarea>`)}
+          </div>
+
+          <div style="margin-top:18px;">
+            <h3>Documente și certificări</h3>
+            <div class="checkbox-grid" style="margin-top:12px;">
+              ${check("f_hs", member.hs, "HS")}
+              ${check("f_pilot", member.pilot, "Pilot")}
+              ${check("f_rfLs", member.rfLs, "RF LS")}
+              ${check("f_elicopterLs", member.elicopterLs, "Elicopter LS")}
+              ${check("f_heli", member.heli, "Heli")}
+              ${check("f_pilotHs", member.pilotHs, "Pilot HS")}
+              ${check("f_knowsIndustrialSouth", member.knowsIndustrialSouth, "Cunoaște Industrială Sud")}
+              ${check("f_locationCertificate", member.locationCertificate, "Certificat locații")}
+              ${check("f_gunnerCertificate", member.gunnerCertificate, "Certificat Gunner")}
+            </div>
+          </div>
+
+          <div style="margin-top:18px;">
+            <h3>Puncte introduse manual</h3>
+            <div class="grid cards-5" style="margin-top:12px;">
+              ${field("Anunțuri de angajare", `<input type="number" id="p_announcements" value="${numberValue(member.points.announcements)}">`)}
+              ${field("Angajare", `<input type="number" id="p_recruit" value="${numberValue(member.points.recruit)}">`)}
+              ${field("Contracte de livrare", `<input type="number" id="p_contracts" value="${numberValue(member.points.contracts)}">`)}
+              ${field("Activitate ilegală", `<input type="number" id="p_illegal" value="${numberValue(member.points.illegal)}">`)}
+              ${field("Activități LS", `<input type="number" id="p_ls" value="${numberValue(member.points.ls)}">`)}
+              ${field("Activități Cayo", `<input type="number" id="p_cayo" value="${numberValue(member.points.cayo)}">`)}
+              ${field("Evenimente", `<input type="number" id="p_events" value="${numberValue(member.points.events)}">`)}
+              ${field("Componente", `<input type="number" id="p_components" value="${numberValue(member.points.components)}">`)}
+              ${field("Săpt. curentă", `<input type="number" id="p_currentWeek" value="${numberValue(member.points.currentWeek)}">`)}
+              ${field("Săpt. trecută", `<input type="number" id="p_previousWeek" value="${numberValue(member.points.previousWeek)}">`)}
+            </div>
+          </div>
+
+          <div class="card" style="box-shadow:none; margin-top:18px;">
+            <h3>Previzualizare status promovare</h3>
+            <div class="stack" style="margin-top:12px;">
+              <div class="row-between"><span>Membru</span><strong>${member.nickname || "Fără poreclă"}</strong></div>
+              <div class="row-between"><span>Status</span>${statusBadge(promo.status)}</div>
+              <div>
+                <strong>Ce lipsește</strong>
+                ${promo.missing.length ? `<ul class="clean" style="margin-top:8px;">${promo.missing.map(item => `<li>${item}</li>`).join("")}</ul>` : `<p class="muted" style="margin-top:8px;">Toate condițiile sunt îndeplinite.</p>`}
+              </div>
+            </div>
+          </div>
+        </div>`;
+
+      document.getElementById("saveEditorBtn").addEventListener("click", () => {
+        const data = collectEditor(member.id);
+        const index = members.findIndex(m => m.id === member.id);
+        if (index >= 0) members[index] = data;
+        else members.push(data);
+        saveMembers();
+        selectedMemberId = data.id;
+        editingId = data.id;
+        isCreating = false;
+        renderAll();
+        document.getElementById("saveNotice").textContent = "Membrul a fost salvat.";
+      });
+    }
+
+    function collectEditor(id) {
+      return {
+        id,
+        nickname: valueOf("f_nickname"),
+        name: valueOf("f_name"),
+        rank: valueOf("f_rank"),
+        cnp: valueOf("f_cnp"),
+        months: numberValue(valueOf("f_months")),
+        phone: valueOf("f_phone"),
+        carNumber: valueOf("f_carNumber"),
+        hireDate: valueOf("f_hireDate"),
+        lastPromotion: valueOf("f_lastPromotion"),
+        bulletinUrl: valueOf("f_bulletinUrl"),
+        hs: checkedOf("f_hs"),
+        pilot: checkedOf("f_pilot"),
+        rfLs: checkedOf("f_rfLs"),
+        elicopterLs: checkedOf("f_elicopterLs"),
+        heli: checkedOf("f_heli"),
+        pilotHs: checkedOf("f_pilotHs"),
+        status: valueOf("f_status"),
+        mentor: valueOf("f_mentor"),
+        knowsIndustrialSouth: checkedOf("f_knowsIndustrialSouth"),
+        locationCertificate: checkedOf("f_locationCertificate"),
+        gunnerCertificate: checkedOf("f_gunnerCertificate"),
+        smallWeapons: numberValue(valueOf("f_smallWeapons")),
+        bigWeapons: numberValue(valueOf("f_bigWeapons")),
+        bankBalance: numberValue(valueOf("f_bankBalance")),
+        notes: valueOf("f_notes"),
+        points: {
+          announcements: numberValue(valueOf("p_announcements")),
+          recruit: numberValue(valueOf("p_recruit")),
+          contracts: numberValue(valueOf("p_contracts")),
+          illegal: numberValue(valueOf("p_illegal")),
+          ls: numberValue(valueOf("p_ls")),
+          cayo: numberValue(valueOf("p_cayo")),
+          events: numberValue(valueOf("p_events")),
+          components: numberValue(valueOf("p_components")),
+          currentWeek: numberValue(valueOf("p_currentWeek")),
+          previousWeek: numberValue(valueOf("p_previousWeek"))
+        }
+      };
+    }
+
+    function valueOf(id) {
+      return document.getElementById(id)?.value || "";
+    }
+
+    function checkedOf(id) {
+      return !!document.getElementById(id)?.checked;
+    }
+
+    function field(label, html) {
+      return `<div class="field"><label>${label}</label>${html}</div>`;
+    }
+
+    function check(id, checked, label) {
+      return `<label class="check"><input type="checkbox" id="${id}" ${checked ? "checked" : ""}><span>${label}</span></label>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;");
+    }
+
+    function renderAll() {
+      renderDashboard();
+      renderGuide();
+      renderPoints();
+      renderMembers();
+      renderProfile();
+      renderEditor();
+    }
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    document.getElementById("addMemberBtn").addEventListener("click", () => {
+      const nextId = members.length ? Math.max(...members.map(m => m.id)) + 1 : 1;
+      const fresh = emptyMember(nextId);
+      members.push(fresh);
+      editingId = nextId;
+      selectedMemberId = nextId;
+      isCreating = true;
+      saveMembers();
+      renderAll();
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      document.querySelector('[data-tab="editor"]').classList.add("active");
+      document.getElementById("editor").classList.add("active");
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
