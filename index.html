@@ -3,1138 +3,1090 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Montvario Management Portal</title>
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --muted: #64748b;
-      --primary: #0f172a;
-      --soft: #f1f5f9;
-      --success: #dcfce7;
-      --warning: #fef3c7;
-      --danger: #fee2e2;
-      --success-text: #166534;
-      --warning-text: #92400e;
-      --danger-text: #991b1b;
-      --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-      --radius: 18px;
-    }
+  <title>Montvario Luxury Panel</title>
+  
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    h1, h2, h3, p { margin: 0; }
-    .subtitle { color: var(--muted); margin-top: 6px; }
-
-    .btn {
-      border: none;
-      border-radius: 14px;
-      padding: 12px 16px;
-      background: var(--primary);
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn.secondary {
-      background: white;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-      background: white;
-      border: 1px solid var(--border);
-      padding: 8px;
-      border-radius: 18px;
-      margin-bottom: 24px;
-    }
-
-    .tab-btn {
-      border: none;
-      background: transparent;
-      border-radius: 12px;
-      padding: 12px 10px;
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    .tab-btn.active {
-      background: var(--soft);
-      color: var(--text);
-    }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    .grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .grid.cards-5 { grid-template-columns: repeat(5, 1fr); }
-    .grid.cards-2 { grid-template-columns: repeat(2, 1fr); }
-    .grid.cards-3 { grid-template-columns: repeat(3, 1fr); }
-    .grid.cards-4 { grid-template-columns: repeat(4, 1fr); }
-    .grid.cards-6 { grid-template-columns: repeat(6, 1fr); }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-
-    .card h3 { margin-bottom: 14px; font-size: 18px; }
-    .metric { font-size: 30px; font-weight: 800; margin-top: 8px; }
-    .muted { color: var(--muted); }
-
-    .table-wrap {
-      overflow: auto;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: white;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 1100px;
-    }
-
-    th, td {
-      padding: 12px 14px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-      vertical-align: top;
-    }
-
-    th {
-      background: var(--soft);
-      font-size: 13px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 11px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: white;
-      font: inherit;
-    }
-
-    textarea { min-height: 42px; resize: vertical; }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 12px;
-      font-weight: 700;
-      border: 1px solid var(--border);
-      background: white;
-    }
-
-    .badge.success { background: var(--success); color: var(--success-text); border-color: #bbf7d0; }
-    .badge.warning { background: var(--warning); color: var(--warning-text); border-color: #fde68a; }
-    .badge.danger { background: var(--danger); color: var(--danger-text); border-color: #fecaca; }
-
-    .row-between {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .stack { display: grid; gap: 12px; }
-    .field { display: grid; gap: 6px; }
-    .field label { font-size: 14px; font-weight: 600; color: #334155; }
-
-    .checkbox-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    .check {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 14px;
-      background: white;
-    }
-
-    .split {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 16px;
-    }
-
-    .three {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    ul.clean {
-      margin: 0;
-      padding-left: 18px;
-      display: grid;
-      gap: 6px;
-      color: #334155;
-      font-size: 14px;
-    }
-
-    .mini-card {
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      background: white;
-    }
-
-    .progress {
-      height: 8px;
-      width: 100%;
-      background: var(--soft);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-
-    .progress span {
-      display: block;
-      height: 100%;
-      background: var(--primary);
-      border-radius: 999px;
-    }
-
-    .hidden { display: none !important; }
-
-    .notice {
-      margin-left: 8px;
-      color: var(--success-text);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .link-btn {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .profile-grid {
-      display: grid;
-      gap: 16px;
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .doc-grid {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    @media (max-width: 1100px) {
-      .grid.cards-5, .grid.cards-4, .grid.cards-3, .checkbox-grid, .doc-grid, .profile-grid, .three, .split, .grid.cards-2 {
-        grid-template-columns: 1fr;
-      }
-      .tabs { grid-template-columns: repeat(2, 1fr); }
-      .topbar { flex-direction: column; }
-    }
-  </style>
+<style>
+:root{
+  --bg:#0a0807;
+  --bg2:#120e0b;
+  --panel:#17120f;
+  --panel-2:#1f1814;
+  --panel-3:#261d17;
+  --line:#463426;
+  --line-soft:rgba(214,180,139,.12);
+  --text:#f6efe7;
+  --muted:#c9b8a1;
+  --brown:#8a6142;
+  --brown-2:#a87a57;
+  --gold:#e2c39a;
+  --green:#2f6243;
+  --red:#7b3131;
+  --yellow:#7a6736;
+  --blue:#365972;
+  --shadow:0 22px 50px rgba(0,0,0,.38);
+  --radius:20px;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;padding:0;
+  background:
+    radial-gradient(circle at top, rgba(168,122,87,.12), transparent 28%),
+    linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif
+}
+body::-webkit-scrollbar,.modal::-webkit-scrollbar,.table-wrap::-webkit-scrollbar{height:12px;width:12px}
+body::-webkit-scrollbar-thumb,.modal::-webkit-scrollbar-thumb,.table-wrap::-webkit-scrollbar-thumb{background:#584332;border-radius:999px;border:2px solid transparent;background-clip:padding-box}
+body::-webkit-scrollbar-track,.modal::-webkit-scrollbar-track,.table-wrap::-webkit-scrollbar-track{background:#120f0d}
+.container{max-width:1540px;margin:0 auto;padding:24px}
+.topbar{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
+  margin-bottom:18px;padding:18px 20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));
+  border:1px solid var(--line-soft);border-radius:24px;box-shadow:var(--shadow)
+}
+h1,h2,h3,p{margin:0}
+h1{font-size:30px;letter-spacing:.02em}
+h3{font-size:17px}
+.subtitle{color:var(--muted);margin-top:8px;max-width:860px;line-height:1.45}
+.btn{
+  border:1px solid rgba(255,255,255,.06);
+  background:linear-gradient(180deg,var(--brown-2),var(--brown));
+  color:#fff;padding:11px 14px;border-radius:14px;font-weight:800;cursor:pointer;
+  box-shadow:0 10px 24px rgba(0,0,0,.18);transition:.18s ease
+}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+.btn.secondary{background:linear-gradient(180deg,var(--panel-3),var(--panel-2));color:var(--text);border-color:var(--line-soft)}
+.btn.ghost{background:transparent}
+.btn.small{padding:7px 10px;border-radius:10px;font-size:12px}
+.btn.red{background:linear-gradient(180deg,#8d3f3f,#6f2d2d)}
+.tabs{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:8px;
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015));
+  border:1px solid var(--line-soft);padding:8px;border-radius:20px;margin-bottom:18px
+}
+.tab-btn{
+  background:transparent;color:var(--muted);border:none;border-radius:12px;
+  padding:11px 8px;font-weight:800;cursor:pointer;transition:.16s ease
+}
+.tab-btn:hover{background:rgba(255,255,255,.03);color:var(--text)}
+.tab-btn.active{
+  background:linear-gradient(180deg,#2a221c,#211a15);color:var(--text);
+  border:1px solid rgba(226,195,154,.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)
+}
+.tab,.tab-content{display:none}
+.tab.active,.tab-content.active{display:block}
+.grid{display:grid;gap:16px}
+.grid.cards-2,.g2{grid-template-columns:repeat(2,1fr)}
+.grid.cards-3,.g3{grid-template-columns:repeat(3,1fr)}
+.grid.cards-4,.g4{grid-template-columns:repeat(4,1fr)}
+.grid.cards-5,.g5{grid-template-columns:repeat(5,1fr)}
+.card{
+  background:linear-gradient(180deg,var(--panel) 0%,#120f0d 100%);
+  border:1px solid var(--line-soft);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px
+}
+.card > h3:first-child{margin-bottom:12px}
+.metric{font-size:32px;font-weight:900;letter-spacing:.01em;line-height:1.05}
+.muted{color:var(--muted)!important}
+.notice{color:#d9c7b1;font-size:12px;font-weight:800}
+.table-wrap{
+  overflow:auto;border:1px solid var(--line-soft);border-radius:18px;background:linear-gradient(180deg,#16120f,#120f0d)
+}
+table{width:100%;border-collapse:separate;border-spacing:0;min-width:1400px}
+th,td{
+  padding:10px 10px;text-align:left;border-bottom:1px solid rgba(214,180,139,.08);
+  font-size:13px;vertical-align:middle
+}
+th{
+  position:sticky;top:0;background:#1b1511;color:#ead7bf;
+  font-size:12px;letter-spacing:.03em;z-index:1
+}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.012)}
+tr:hover td{background:rgba(214,180,139,.045)}
+.controls{display:flex;gap:10px;flex-wrap:wrap}
+.row-between{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.stack,.criteria-list,.history-list{display:grid;gap:10px}
+input,select,textarea{
+  width:100%;background:#171310;border:1px solid var(--line-soft);border-radius:12px;
+  padding:10px 11px;color:var(--text);font:inherit;transition:border-color .15s ease, box-shadow .15s ease
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:rgba(226,195,154,.38);box-shadow:0 0 0 3px rgba(226,195,154,.08)
+}
+textarea{min-height:70px;resize:vertical}
+.field{display:grid;gap:6px}
+.field label{font-size:13px;font-weight:800;color:#e8d5bf}
+.badge{
+  display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;
+  font-size:11px;font-weight:800;border:1px solid rgba(255,255,255,.05)
+}
+.badge.success,.badge.ok{background:rgba(72,122,91,.22);color:#d2e9d8}
+.badge.warning,.badge.warn{background:rgba(119,98,54,.28);color:#f0dfaf}
+.badge.danger,.badge.bad{background:rgba(111,45,45,.24);color:#f0c2c2}
+.badge.info{background:rgba(49,79,99,.24);color:#cfe4ef}
+.rank-chip{
+  display:inline-flex;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:900;
+  border:1px solid rgba(255,255,255,.05)
+}
+.rank-Made_Man{background:#4a3826}
+.rank-Asociat{background:#3f3125}
+.rank-Manager{background:#382b21}
+.rank-Supervizor{background:#30261f}
+.rank-Sef_de_tura{background:#291f1a}
+.sep td,.rank-separator td{padding:6px 10px;border-bottom:none;background:transparent}
+.sep-line{
+  display:flex;align-items:center;gap:10px;color:#b69575;font-size:10px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.08em
+}
+.sep-line::before,.sep-line::after{content:"";flex:1;height:1px;background:rgba(214,180,139,.15)}
+.kpi,.criteria-item{
+  display:flex;justify-content:space-between;gap:10px;padding:11px 12px;
+  border:1px solid var(--line-soft);border-radius:13px;
+  background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.012))
+}
+.mini,.mini-card{
+  border:1px solid var(--line-soft);border-radius:14px;padding:12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.012))
+}
+.inline-badges{display:flex;gap:6px;flex-wrap:wrap}
+.hint{font-size:12px;color:var(--muted);line-height:1.4}
+.compact th,.compact td{padding:9px 9px}
+.modal-root{position:fixed;inset:0;pointer-events:none;z-index:1000}
+.modal-root.active{pointer-events:auto}
+.modal-backdrop,.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);
+  display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow:auto
+}
+.modal{
+  position:relative;left:auto;top:auto;transform:none;
+  width:min(1100px,100%);max-height:none;overflow:visible;
+  background:linear-gradient(180deg,#191410 0%,#110e0c 100%);
+  border:1px solid var(--line-soft);border-radius:24px;
+  box-shadow:var(--shadow);padding:20px;margin:auto 0
+}
+.modal-head{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(214,180,139,.1)
+}
+.close-x{background:transparent;border:none;color:var(--muted);font-size:24px;cursor:pointer}
+.week-box{
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  padding:11px 12px;border:1px solid var(--line-soft);border-radius:14px;
+  background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01))
+}
+.profile-grid,.doc-grid,.activity-grid{display:grid;gap:16px}
+.profile-grid{grid-template-columns:repeat(3,1fr)}
+doc-grid{grid-template-columns:repeat(4,1fr)}
+.activity-grid{grid-template-columns:1.12fr .88fr}
+.checkbox-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.check{
+  display:flex;align-items:center;gap:10px;border:1px solid var(--line-soft);
+  padding:12px;border-radius:14px;background:rgba(255,255,255,.02)
+}
+.member-editor-panel{
+  margin-top:18px;border:1px solid var(--line-soft);border-radius:16px;padding:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01))
+}
+.member-actions{display:flex;gap:8px;flex-wrap:wrap}
+.activity-row{display:grid;grid-template-columns:2fr .8fr .9fr 2.2fr auto;gap:10px;align-items:end;margin-bottom:10px}
+.hr{height:1px;background:rgba(214,180,139,.12);margin:14px 0}
+.toolbar{
+  display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;
+  margin-bottom:14px;padding:12px 14px;border-radius:18px;border:1px solid var(--line-soft);
+  background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01))
+}
+.pill{
+  display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;
+  border:1px solid var(--line-soft);background:rgba(255,255,255,.02);font-size:11px;font-weight:800;color:#e9d8c2
+}
+.icon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;background:rgba(226,195,154,.08);border:1px solid rgba(226,195,154,.12);font-size:10px;line-height:1;color:var(--gold);margin-right:6px;vertical-align:middle}
+.sort-btn{background:transparent;border:none;color:#ead7bf;font:inherit;font-weight:800;cursor:pointer;padding:0}
+.sort-btn:hover{color:#fff}
+.export-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toast-root{
+  position:fixed; right:18px; bottom:18px; z-index:1200;
+  display:grid; gap:10px; pointer-events:none;
+}
+.toast{
+  min-width:280px; max-width:360px;
+  padding:12px 14px; border-radius:14px;
+  background:linear-gradient(180deg,#1f1814,#17120f);
+  border:1px solid rgba(226,195,154,.16);
+  color:var(--text); box-shadow:var(--shadow);
+  font-size:13px; font-weight:700; line-height:1.4;
+  transform:translateY(8px); opacity:0; animation:toastIn .18s ease forwards;
+}
+.toast.success{border-color:rgba(72,122,91,.35)}
+.toast.warn{border-color:rgba(119,98,54,.35)}
+.toast.bad{border-color:rgba(111,45,45,.35)}
+@keyframes toastIn{to{transform:translateY(0);opacity:1}}
+.member-row-eligible td{box-shadow:inset 3px 0 0 rgba(72,122,91,.55)}
+.member-row-warning td{box-shadow:inset 3px 0 0 rgba(119,98,54,.55)}
+.member-row-danger td{box-shadow:inset 3px 0 0 rgba(111,45,45,.55)}
+.modal-grid-2{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}
+.modal-side .kpi{margin-bottom:10px}
+.modal-footer{
+  position:sticky; bottom:-20px; margin:16px -20px -20px -20px; padding:14px 20px;
+  background:linear-gradient(180deg,rgba(17,14,12,.2),#120f0d 36%);
+  border-top:1px solid rgba(214,180,139,.12);
+  display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
+}
+.top-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.top-card{padding:14px;border-radius:16px;border:1px solid var(--line-soft);background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01))}
+.top-card h4{margin:0 0 10px 0;font-size:13px;color:#e9d8c2;letter-spacing:.02em}
+.top-item{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid rgba(214,180,139,.08);font-size:13px}
+.top-item:first-child{border-top:none;padding-top:0}
+.doc-section{margin-top:18px;border:1px solid rgba(214,180,139,.10);border-radius:18px;padding:16px;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01))}
+.doc-section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.doc-actions{display:flex;gap:8px;flex-wrap:wrap}
+.doc-check-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.doc-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.doc-pill{padding:10px 12px;border-radius:12px;border:1px solid rgba(214,180,139,.10);background:rgba(255,255,255,.02);font-size:12px;font-weight:700}
+@media (max-width:1100px){.grid.cards-5,.grid.cards-4,.grid.cards-3,.grid.cards-2,.g2,.g3,.g4,.g5,.checkbox-grid,.doc-grid,.profile-grid,.activity-grid,.activity-row,.modal-grid-2,.top-grid,.doc-check-grid,.doc-summary{grid-template-columns:1fr}
+  .tabs{grid-template-columns:repeat(2,1fr)}
+  .topbar{flex-direction:column}
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="topbar">
-      <div>
-        <h1>Montvario Management Portal</h1>
-        <p class="subtitle">Administrare membri, puncte și eligibilitate promovare.</p>
-      </div>
-      <div>
-        <button class="btn" id="addMemberBtn">Adaugă membru</button>
-      </div>
+<div class="container">
+  <div class="topbar">
+    <div>
+      <h1>Montvario Luxury Panel</h1>
+      <p class="subtitle">Variantă refăcută curat: membri, activități, 4 săptămâni manuale și eligibilitate pe ultima avansare.</p>
     </div>
-
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-      <button class="tab-btn" data-tab="guide">Ghid</button>
-      <button class="tab-btn" data-tab="points">Evidență puncte</button>
-      <button class="tab-btn" data-tab="members">Registru membri</button>
-      <button class="tab-btn" data-tab="profile">Fișă membru</button>
-      <button class="tab-btn" data-tab="editor">Editor</button>
+    <div class="controls">
+      <button class="btn" id="openAddMember">Adaugă membru</button>
+      <button class="btn secondary" id="exportCsv">Export CSV</button>
+      <button class="btn secondary" id="exportMeetingCsv">Export ședință</button>
+      <button class="btn secondary" id="resetDemo">Reset demo</button>
     </div>
-
-    <section id="dashboard" class="tab-content active"></section>
-    <section id="guide" class="tab-content"></section>
-    <section id="points" class="tab-content"></section>
-    <section id="members" class="tab-content"></section>
-    <section id="profile" class="tab-content"></section>
-    <section id="editor" class="tab-content"></section>
   </div>
 
-  <script>
-    const RANKS = ["Șef de tură", "Supervizor", "Manager", "Asociat", "Made Man"];
-    const STATUSES = ["Activ", "Inactiv", "În concediu", "Suspendat"];
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-btn" data-tab="members">Registru membri</button>
+    <button class="tab-btn" data-tab="activities">Activități</button>
+    <button class="tab-btn" data-tab="points">Evidență puncte</button>
+    <button class="tab-btn" data-tab="promotions">Promovări</button>
+    <button class="tab-btn" data-tab="profile">Fișă membru</button>
+    <button class="tab-btn" data-tab="guide">Ghid</button>
+  </div>
 
-    const GUIDE = [
-      {
-        rank: "Șef de tură",
-        description: "Primul pas în lumea ilegalităților. Are încă o legătură strânsă cu service-ul și ghidează mecanicii.",
-        roles: [
-          "Ghidează mecanicii și gestionează activitățile la service",
-          "Participă în mare parte la activități legale",
-          "Învață partea ilegală și participă în limita posibilităților"
-        ],
-        promotionTo: "Supervizor",
-        requirements: [
-          "Minim 30P",
-          "Minim o săptămână vechime",
-          "1 contract de livrare",
-          "Mașină HS",
-          "Cunoașterea zonei Industrială Sud",
-          "Minim 3 anunțuri de angajare"
-        ]
-      },
-      {
-        rank: "Supervizor",
-        description: "Are deja o cunoștință de bază asupra părții ilegale și participă la activități mai complexe.",
-        roles: [
-          "Ajută Șefii de Tură pe partea legală",
-          "Cunoaște de bază partea ilegală și zonele orașului",
-          "Organizează sau participă la răpiri"
-        ],
-        promotionTo: "Manager",
-        requirements: [
-          "Minim 30P",
-          "RF LS pe o mașină HS",
-          "Minim 2 contracte de livrare",
-          "Minim 2 săptămâni vechime sau o săptămână cu minim 60P",
-          "Minim 1 armă mică și 1 armă mare",
-          "Minim 1 angajare",
-          "Minim 3 anunțuri de angajare"
-        ]
-      },
-      {
-        rank: "Manager",
-        description: "Intermediar între partea legală și ilegală. Coordonează activități legale sau ilegale reduse.",
-        roles: [
-          "Coordonează Șefii de Tură",
-          "Coordonează acțiuni",
-          "Organizează transporturi și mici lovituri"
-        ],
-        promotionTo: "Asociat",
-        requirements: [
-          "Minim 30P",
-          "Certificat locații",
-          "Licență Heli",
-          "2 acțiuni ilegale în 2 săptămâni",
-          "2 săptămâni consecutive cu minimul atins sau minim 80P",
-          "Minim 6 contracte de livrare",
-          "Minim 2 arme mici și 2 arme mari",
-          "Licență Pilot HS",
-          "1M în bancă",
-          "Minim 3 angajări",
-          "Minim 3 anunțuri de angajare",
-          "RF pe o mașină extreme"
-        ]
-      },
-      {
-        rank: "Asociat",
-        description: "Nu mai are legătură cu afacerile legale. Se concentrează pe sarcini ilegale de bază.",
-        roles: [
-          "Participă activ la jafuri și acțiuni organizate",
-          "Conduce pe teren sub supravegherea unui Made Man",
-          "Poate propune recruți cu acord Made Man"
-        ],
-        promotionTo: "Made Man",
-        requirements: [
-          "Minim 30P",
-          "Minim 5 arme (2x Tec9 + 3x AK/Advanced) full",
-          "Certificat Gunner",
-          "Minim 2M în bancă",
-          "Elicopter LS",
-          "4 acțiuni ilegale în 3 săptămâni",
-          "Minim 3 angajări",
-          "Minim 3 săptămâni vechime sau 2 săptămâni cu minim 70P",
-          "Seriozitate și implicare"
-        ]
-      },
-      {
-        rank: "Made Man",
-        description: "Are responsabilități semnificative, loialitate absolută și devine model pentru ceilalți.",
-        roles: [
-          "Conduce și organizează acțiuni importante",
-          "Propune membri pentru inițiere și se ocupă de inițiere",
-          "Reprezintă familia mică în fața conducerii"
-        ],
-        promotionTo: null,
-        requirements: [
-          "Loialitate totală",
-          "Activitate constantă",
-          "Își atinge minimul de puncte",
-          "Implicare constantă",
-          "Seriozitate"
-        ]
-      }
-    ];
+  <section id="dashboard" class="tab active"></section>
+  <section id="members" class="tab"></section>
+  <section id="activities" class="tab"></section>
+  <section id="points" class="tab"></section>
+  <section id="promotions" class="tab"></section>
+  <section id="profile" class="tab"></section>
+  <section id="guide" class="tab"></section>
+</div>
 
-    const defaultMembers = [
-      {
-        id: 1,
-        nickname: "Raven",
-        name: "Mihai Popescu",
-        rank: "Șef de tură",
-        cnp: "1980101123456",
-        months: 1,
-        phone: "0712 000 111",
-        carNumber: "B-99-MTV",
-        hireDate: "2026-02-20",
-        lastPromotion: "2026-02-20",
-        bulletinUrl: "https://example.com/buletin-raven.jpg",
-        hs: true,
-        pilot: false,
-        rfLs: false,
-        elicopterLs: false,
-        heli: false,
-        pilotHs: false,
-        status: "Activ",
-        mentor: "Viper",
-        knowsIndustrialSouth: true,
-        locationCertificate: false,
-        gunnerCertificate: false,
-        smallWeapons: 1,
-        bigWeapons: 0,
-        bankBalance: 450000,
-        notes: "",
-        points: { announcements: 3, recruit: 1, contracts: 2, illegal: 5, ls: 8, cayo: 1, events: 2, components: 3, currentWeek: 25, previousWeek: 24 }
-      },
-      {
-        id: 2,
-        nickname: "Viper",
-        name: "Andrei Ionescu",
-        rank: "Manager",
-        cnp: "1970202123456",
-        months: 3,
-        phone: "0722 111 222",
-        carNumber: "B-11-MTV",
-        hireDate: "2025-12-10",
-        lastPromotion: "2026-02-01",
-        bulletinUrl: "https://example.com/buletin-viper.jpg",
-        hs: true,
-        pilot: true,
-        rfLs: true,
-        elicopterLs: false,
-        heli: true,
-        pilotHs: true,
-        status: "Activ",
-        mentor: "Belvarro",
-        knowsIndustrialSouth: true,
-        locationCertificate: true,
-        gunnerCertificate: false,
-        smallWeapons: 2,
-        bigWeapons: 2,
-        bankBalance: 1350000,
-        notes: "Foarte activ pe LS.",
-        points: { announcements: 4, recruit: 6, contracts: 12, illegal: 20, ls: 18, cayo: 6, events: 2, components: 6, currentWeek: 74, previousWeek: 68 }
-      },
-      {
-        id: 3,
-        nickname: "Ghost",
-        name: "Robert Marin",
-        rank: "Asociat",
-        cnp: "1960612123456",
-        months: 5,
-        phone: "0733 444 555",
-        carNumber: "B-77-MTV",
-        hireDate: "2025-11-15",
-        lastPromotion: "2026-01-28",
-        bulletinUrl: "https://example.com/buletin-ghost.jpg",
-        hs: true,
-        pilot: true,
-        rfLs: true,
-        elicopterLs: true,
-        heli: true,
-        pilotHs: true,
-        status: "Activ",
-        mentor: "Belvarro",
-        knowsIndustrialSouth: true,
-        locationCertificate: true,
-        gunnerCertificate: true,
-        smallWeapons: 3,
-        bigWeapons: 3,
-        bankBalance: 2450000,
-        notes: "Pregătit pentru verificare Made Man.",
-        points: { announcements: 3, recruit: 11, contracts: 8, illegal: 30, ls: 12, cayo: 7, events: 3, components: 10, currentWeek: 84, previousWeek: 74 }
-      }
-    ];
+<div id="modalRoot" class="modal-root"></div>
+<div id="toastRoot" class="toast-root"></div>
 
-    let members = loadMembers();
-    let selectedMemberId = members[0]?.id || 1;
-    let editingId = members[0]?.id || 1;
-    let query = "";
-    let rankFilter = "all";
-    let isCreating = false;
+<script>
+const RANKS=["Șef de tură","Supervizor","Manager","Asociat","Made Man"];
+const RANKS_DESC=[...RANKS].reverse();
+const STATUSES=["Activ","Inactiv","În concediu","Suspendat"];
+const CATEGORY_OPTIONS=[
+  {key:"announcements",label:"Anunțuri de angajare"},
+  {key:"recruit",label:"Angajare"},
+  {key:"contracts",label:"Contracte de livrare"},
+  {key:"illegal",label:"Activitate ilegală"},
+  {key:"ls",label:"Activități LS"},
+  {key:"cayo",label:"Activități Cayo"},
+  {key:"events",label:"Evenimente"},
+  {key:"components",label:"Componente"}
+];
+const PRESETS=[
+  {label:"Jaf",category:"illegal",ppu:10,qty:1,description:"Jaf"},
+  {label:"Răpire",category:"illegal",ppu:5,qty:1,description:"Răpire"},
+  {label:"Contract",category:"contracts",ppu:2,qty:1,description:"Contract de livrare"},
+  {label:"Anunț",category:"announcements",ppu:1,qty:1,description:"Anunț de angajare"},
+  {label:"Mineriadă",category:"ls",ppu:2,qty:1,description:"Mineriadă"},
+  {label:"Eveniment",category:"events",ppu:1,qty:1,description:"Eveniment"},
+  {label:"USB",category:"components",ppu:3,qty:1,description:"Stick USB"}
+];
+const GUIDE=[
+  {rank:"Șef de tură",promotionTo:"Supervizor",requirements:["Minim 30P","Minim o săptămână de la ultima avansare","1 contract de livrare","Mașină HS","Cunoașterea zonei Industrială Sud","3 anunțuri de angajare"]},
+  {rank:"Supervizor",promotionTo:"Manager",requirements:["Minim 30P","RF LS pe o mașină HS","2 contracte de livrare","2 săptămâni de la ultima avansare sau o săptămână cu 60P","1 armă mică","1 armă mare","1 angajare","3 anunțuri de angajare"]},
+  {rank:"Manager",promotionTo:"Asociat",requirements:["Minim 30P","Certificat locații","Licență Heli","2 acțiuni ilegale în ultimele 2 săptămâni","80P sau 2 săptămâni consecutive cu minimul","6 contracte de livrare","2 arme mici","2 arme mari","Licență Pilot HS","1M în bancă","3 angajări","3 anunțuri","RF pe o mașină extreme"]},
+  {rank:"Asociat",promotionTo:"Made Man",requirements:["Minim 30P","5 arme totale (2 mici + 3 mari)","Certificat Gunner","2M în bancă","Elicopter LS","4 acțiuni ilegale în ultimele 3 săptămâni","3 angajări","3 săptămâni de la ultima avansare sau 2 săptămâni cu 70P"]},
+  {rank:"Made Man",promotionTo:null,requirements:["Loialitate totală","Activitate constantă","Minim făcut constant","Implicare","Seriozitate"]}
+];
 
-    function loadMembers() {
-      try {
-        const raw = localStorage.getItem("montvario-members-html");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length) return parsed;
-        }
-      } catch (e) {}
-      return JSON.parse(JSON.stringify(defaultMembers));
-    }
+function defaultWeeks(){
+  return [
+    {id:1,start:"2026-03-08",end:"2026-03-15",label:"08.03.2026 - 15.03.2026"},
+    {id:2,start:"2026-03-01",end:"2026-03-08",label:"01.03.2026 - 08.03.2026"},
+    {id:3,start:"2026-02-22",end:"2026-03-01",label:"22.02.2026 - 01.03.2026"},
+    {id:4,start:"2026-02-15",end:"2026-02-22",label:"15.02.2026 - 22.02.2026"}
+  ];
+}
+const DEMO_MEMBERS=[
+  {id:1,nickname:"Raven",name:"Mihai Popescu",rank:"Șef de tură",status:"Activ",cnp:"1980101123456",phone:"0712000111",carNumber:"B-99-MTV",hireDate:"2026-02-20",lastPromotion:"2026-02-20",bulletinUrl:"",mentor:"Viper",hs:true,pilot:false,rfLs:false,elicopterLs:false,heli:false,pilotHs:false,knowsIndustrialSouth:true,locationCertificate:false,gunnerCertificate:false,smallWeapons:1,bigWeapons:0,bankBalance:450000,notes:""},
+  {id:2,nickname:"Viper",name:"Andrei Ionescu",rank:"Manager",status:"Activ",cnp:"1970202123456",phone:"0722111222",carNumber:"B-11-MTV",hireDate:"2025-12-10",lastPromotion:"2026-02-01",bulletinUrl:"",mentor:"Belvarro",hs:true,pilot:true,rfLs:true,elicopterLs:false,heli:true,pilotHs:true,knowsIndustrialSouth:true,locationCertificate:true,gunnerCertificate:false,smallWeapons:2,bigWeapons:2,bankBalance:1350000,notes:""},
+  {id:3,nickname:"Ghost",name:"Robert Marin",rank:"Asociat",status:"Activ",cnp:"1960612123456",phone:"0733444555",carNumber:"B-77-MTV",hireDate:"2025-11-15",lastPromotion:"2026-01-28",bulletinUrl:"",mentor:"Belvarro",hs:true,pilot:true,rfLs:true,elicopterLs:true,heli:true,pilotHs:true,knowsIndustrialSouth:true,locationCertificate:true,gunnerCertificate:true,smallWeapons:3,bigWeapons:3,bankBalance:2450000,notes:""}
+];
+function demoActivities(weeks){
+  const now=new Date().toISOString();
+  return [
+    {id:1,weekId:weeks[0].id,memberId:1,category:"announcements",qty:3,ppu:1,points:3,description:"3 anunțuri",createdAt:now},
+    {id:2,weekId:weeks[0].id,memberId:1,category:"contracts",qty:1,ppu:2,points:2,description:"1 contract",createdAt:now},
+    {id:3,weekId:weeks[0].id,memberId:1,category:"illegal",qty:1,ppu:5,points:5,description:"1 răpire",createdAt:now},
+    {id:4,weekId:weeks[1].id,memberId:1,category:"announcements",qty:4,ppu:1,points:4,description:"anunțuri",createdAt:now},
+    {id:5,weekId:weeks[0].id,memberId:2,category:"contracts",qty:6,ppu:2,points:12,description:"contracte",createdAt:now},
+    {id:6,weekId:weeks[0].id,memberId:2,category:"illegal",qty:2,ppu:5,points:10,description:"răpiri",createdAt:now},
+    {id:7,weekId:weeks[1].id,memberId:2,category:"illegal",qty:1,ppu:10,points:10,description:"jaf",createdAt:now},
+    {id:8,weekId:weeks[0].id,memberId:2,category:"announcements",qty:3,ppu:1,points:3,description:"anunțuri",createdAt:now},
+    {id:9,weekId:weeks[0].id,memberId:2,category:"recruit",qty:3,ppu:1,points:3,description:"angajări",createdAt:now},
+    {id:10,weekId:weeks[0].id,memberId:3,category:"illegal",qty:4,ppu:5,points:20,description:"ilegal",createdAt:now},
+    {id:11,weekId:weeks[1].id,memberId:3,category:"illegal",qty:1,ppu:10,points:10,description:"jaf",createdAt:now},
+    {id:12,weekId:weeks[2].id,memberId:3,category:"illegal",qty:1,ppu:5,points:5,description:"răpire",createdAt:now},
+    {id:13,weekId:weeks[0].id,memberId:3,category:"recruit",qty:3,ppu:1,points:3,description:"angajări",createdAt:now}
+  ];
+}
 
-    function saveMembers() {
-      localStorage.setItem("montvario-members-html", JSON.stringify(members));
-    }
+let weeks=loadData("mv_weeks_final_clean", defaultWeeks());
+let members=loadData("mv_members_final_clean", DEMO_MEMBERS);
+let activities=loadData("mv_activities_final_clean", demoActivities(weeks));
+let selectedMemberId=members[0]?.id||1;
+let memberSearch="";
+let rankFilter="all";
+let statusFilter="all";
+let bulkRows=[{category:"announcements",qty:1,ppu:1,description:""}];
+let historyLog=loadData("mv_history_luxury_plus", []);
 
-    function getNextRank(rank) {
-      const index = RANKS.indexOf(rank);
-      if (index < 0 || index === RANKS.length - 1) return null;
-      return RANKS[index + 1];
-    }
+function saveAll(){
+  localStorage.setItem("mv_weeks_final_clean",JSON.stringify(weeks));
+  localStorage.setItem("mv_members_final_clean",JSON.stringify(members));
+  localStorage.setItem("mv_activities_final_clean",JSON.stringify(activities));
+  localStorage.setItem("mv_history_luxury_plus",JSON.stringify(historyLog));
+}
 
-    function numberValue(value) {
-      const n = Number(value);
-      return Number.isNaN(n) ? 0 : n;
-    }
+function addHistory(type,message,memberId=null,meta={}){
+  historyLog.unshift({
+    id:historyLog.length?Math.max(...historyLog.map(x=>x.id))+1:1,
+    type,message,memberId,meta,createdAt:new Date().toISOString()
+  });
+  if(historyLog.length>600) historyLog=historyLog.slice(0,600);
+}
 
-    function statusBadge(status) {
-      if (status === "Eligibil") return `<span class="badge success">Eligibil</span>`;
-      if (status === "Lipsesc condiții") return `<span class="badge warning">Lipsesc condiții</span>`;
-      if (status === "Neeligibil") return `<span class="badge danger">Neeligibil</span>`;
-      return `<span class="badge">${status}</span>`;
-    }
+function memberHistory(memberId, limit=12){
+  return historyLog.filter(h=>h.memberId===memberId).slice(0,limit);
+}
 
-    function boolText(value) {
-      return value ? "Da" : "Nu";
-    }
-
-    function promotionStatus(member) {
-      const next = getNextRank(member.rank);
-      if (!next) return { status: "Top rank", missing: [] };
-
-      const currentWeek = numberValue(member.points.currentWeek);
-      const previousWeek = numberValue(member.points.previousWeek);
-      const missing = [];
-
-      if (currentWeek < 30) missing.push(`Îi mai lipsesc ${30 - currentWeek} puncte`);
-
-      if (member.rank === "Șef de tură") {
-        if (numberValue(member.months) < 1) missing.push("Minim o săptămână vechime");
-        if (numberValue(member.points.contracts) <= 0) missing.push("1 contract de livrare");
-        if (!member.hs) missing.push("Mașină HS");
-        if (!member.knowsIndustrialSouth) missing.push("Cunoașterea zonei Industrială Sud");
-        if (numberValue(member.points.announcements) < 3) missing.push("3 anunțuri de angajare");
-      }
-
-      if (member.rank === "Supervizor") {
-        if (!member.rfLs) missing.push("RF LS pe o mașină HS");
-        if (numberValue(member.points.contracts) < 2) missing.push("2 contracte de livrare");
-        if (numberValue(member.months) < 2 && previousWeek < 60) missing.push("2 săptămâni vechime sau o săptămână cu 60P");
-        if (numberValue(member.smallWeapons) < 1) missing.push("1 armă mică");
-        if (numberValue(member.bigWeapons) < 1) missing.push("1 armă mare");
-        if (numberValue(member.points.recruit) < 1) missing.push("1 angajare");
-        if (numberValue(member.points.announcements) < 3) missing.push("3 anunțuri de angajare");
-      }
-
-      if (member.rank === "Manager") {
-        if (!member.locationCertificate) missing.push("Certificat locații");
-        if (!member.heli) missing.push("Licență Heli");
-        if (numberValue(member.points.illegal) <= 0) missing.push("2 acțiuni ilegale în 2 săptămâni");
-        if (!(currentWeek >= 80 || (currentWeek >= 30 && previousWeek >= 30))) missing.push("80P sau 2 săptămâni consecutive cu minimul atins");
-        if (numberValue(member.points.contracts) < 6) missing.push("6 contracte de livrare");
-        if (numberValue(member.smallWeapons) < 2) missing.push("2 arme mici");
-        if (numberValue(member.bigWeapons) < 2) missing.push("2 arme mari");
-        if (!member.pilotHs) missing.push("Licență Pilot HS");
-        if (numberValue(member.bankBalance) < 1000000) missing.push("1M în bancă");
-        if (numberValue(member.points.recruit) < 3) missing.push("3 angajări");
-        if (numberValue(member.points.announcements) < 3) missing.push("3 anunțuri de angajare");
-        if (!member.rfLs) missing.push("RF pe mașină extreme");
-      }
-
-      if (member.rank === "Asociat") {
-        if (numberValue(member.smallWeapons) < 2 || numberValue(member.bigWeapons) < 3) missing.push("5 arme totale (2 mici + 3 mari)");
-        if (!member.gunnerCertificate) missing.push("Certificat Gunner");
-        if (numberValue(member.bankBalance) < 2000000) missing.push("2M în bancă");
-        if (!member.elicopterLs) missing.push("Elicopter LS");
-        if (numberValue(member.points.illegal) < 20) missing.push("4 acțiuni ilegale în 3 săptămâni");
-        if (numberValue(member.points.recruit) < 3) missing.push("3 angajări");
-        if (!(numberValue(member.months) >= 3 || (currentWeek >= 70 && previousWeek >= 70))) missing.push("3 săptămâni vechime sau 2 săptămâni cu minim 70P");
-      }
-
-      return {
-        status: missing.length === 0 ? "Eligibil" : currentWeek >= 30 ? "Lipsesc condiții" : "Neeligibil",
-        missing
-      };
-    }
-
-    function getSelectedMember() {
-      return members.find(m => m.id === selectedMemberId) || members[0] || null;
-    }
-
-    function getEditingMember() {
-      return members.find(m => m.id === editingId) || null;
-    }
-
-    function filteredMembers() {
-      return members.filter(member => {
-        const matchesQuery = `${member.nickname} ${member.name}`.toLowerCase().includes(query.toLowerCase());
-        const matchesRank = rankFilter === "all" ? true : member.rank === rankFilter;
-        return matchesQuery && matchesRank;
-      });
-    }
-
-    function renderDashboard() {
-      const eligible = members.filter(m => promotionStatus(m).status === "Eligibil").length;
-      const missingConditions = members.filter(m => promotionStatus(m).status === "Lipsesc condiții").length;
-      const belowMinimum = members.filter(m => numberValue(m.points.currentWeek) < 30).length;
-      const inactive = members.filter(m => numberValue(m.points.currentWeek) === 0).length;
-
-      document.getElementById("dashboard").innerHTML = `
-        <div class="grid cards-5">
-          <div class="card"><div class="muted">Total membri</div><div class="metric">${members.length}</div></div>
-          <div class="card"><div class="muted">Sub 30P</div><div class="metric">${belowMinimum}</div></div>
-          <div class="card"><div class="muted">Eligibili</div><div class="metric">${eligible}</div></div>
-          <div class="card"><div class="muted">Lipsesc condiții</div><div class="metric">${missingConditions}</div></div>
-          <div class="card"><div class="muted">Fără activitate</div><div class="metric">${inactive}</div></div>
+function fmtDateTime(iso){
+  try{return new Date(iso).toLocaleString("ro-RO")}catch(e){return iso||""}
+}
+function loadData(key,fallback){try{const raw=localStorage.getItem(key); if(raw){const data=JSON.parse(raw); if(Array.isArray(data)) return data;}}catch(e){} return JSON.parse(JSON.stringify(fallback))}
+function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function num(v){const n=Number(v); return Number.isNaN(n)?0:n}
+function weekById(id){return weeks.find(w=>w.id===id)||null}
+function currentWeek(){return weeks[0]||null}
+function formatRO(iso){if(!iso) return ""; const p=iso.split("-"); return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:iso}
+function intervalLabel(s,e){return `${formatRO(s)} - ${formatRO(e)}`}
+function nextId(arr){return arr.length?Math.max(...arr.map(x=>x.id))+1:1}
+function safeRankClass(rank){return rank.replaceAll(" ","_").replaceAll("Ș","S").replaceAll("ș","s").replaceAll("ă","a").replaceAll("â","a").replaceAll("ț","t").replaceAll("Ț","T")}
+function orderedMembers(){
+  return [...members]
+    .filter(m=>(`${m.nickname} ${m.name} ${m.phone} ${m.cnp}`.toLowerCase().includes(memberSearch.toLowerCase())))
+    .filter(m=>rankFilter==="all"||m.rank===rankFilter)
+    .filter(m=>statusFilter==="all"||m.status===statusFilter)
+    .sort((a,b)=>{
+      const rd=RANKS_DESC.indexOf(a.rank)-RANKS_DESC.indexOf(b.rank);
+      if(rd!==0) return rd;
+      return (a.nickname||"").localeCompare(b.nickname||"","ro");
+    });
+}
+function memberById(id){return members.find(m=>m.id===id)||null}
+function memberWeekEntries(memberId, weekId){return activities.filter(a=>a.memberId===memberId&&a.weekId===weekId)}
+function statsForWeeks(memberId, weekIds){
+  const out={points:{announcements:0,recruit:0,contracts:0,illegal:0,ls:0,cayo:0,events:0,components:0,total:0},
+             counts:{announcements:0,recruit:0,contracts:0,illegal:0,ls:0,cayo:0,events:0,components:0,total:0}};
+  activities.filter(a=>a.memberId===memberId&&weekIds.includes(a.weekId)).forEach(a=>{
+    out.points[a.category]+=num(a.points);
+    out.points.total+=num(a.points);
+    out.counts[a.category]+=num(a.qty||1);
+    out.counts.total+=num(a.qty||1);
+  });
+  return out;
+}
+function currentStats(memberId){return statsForWeeks(memberId,[weeks[0]?.id].filter(Boolean))}
+function prevStats(memberId){return statsForWeeks(memberId,[weeks[1]?.id].filter(Boolean))}
+function lastTwoStats(memberId){return statsForWeeks(memberId,weeks.slice(0,2).map(w=>w.id))}
+function lastThreeStats(memberId){return statsForWeeks(memberId,weeks.slice(0,3).map(w=>w.id))}
+function weeksSinceLastPromotion(member){
+  if(!member.lastPromotion) return 0;
+  const d=new Date(member.lastPromotion);
+  if(Number.isNaN(d.getTime())) return 0;
+  const diff=Date.now()-d.getTime();
+  return diff>0 ? diff/(1000*60*60*24*7) : 0;
+}
+function criteria(member){
+  const cur=currentStats(member.id), prev=prevStats(member.id), two=lastTwoStats(member.id), three=lastThreeStats(member.id), since=weeksSinceLastPromotion(member);
+  const rows=[]; const push=(label,ok)=>rows.push({label,ok});
+  push("Minim 30P",cur.points.total>=30);
+  if(member.rank==="Șef de tură"){
+    push("Minim o săptămână de la ultima avansare",since>=1);
+    push("1 contract de livrare",cur.counts.contracts>=1);
+    push("Mașină HS",!!member.hs);
+    push("Cunoașterea zonei Industrială Sud",!!member.knowsIndustrialSouth);
+    push("3 anunțuri de angajare",cur.counts.announcements>=3);
+  }
+  if(member.rank==="Supervizor"){
+    push("RF LS pe o mașină HS",!!member.rfLs);
+    push("2 contracte de livrare",cur.counts.contracts>=2);
+    push("2 săptămâni de la ultima avansare sau o săptămână cu 60P",since>=2||prev.points.total>=60);
+    push("1 armă mică",num(member.smallWeapons)>=1);
+    push("1 armă mare",num(member.bigWeapons)>=1);
+    push("1 angajare",cur.counts.recruit>=1);
+    push("3 anunțuri de angajare",cur.counts.announcements>=3);
+  }
+  if(member.rank==="Manager"){
+    push("Certificat locații",!!member.locationCertificate);
+    push("Licență Heli",!!member.heli);
+    push("2 acțiuni ilegale în ultimele 2 săptămâni",two.counts.illegal>=2);
+    push("80P sau 2 săptămâni consecutive cu minimul",cur.points.total>=80||(cur.points.total>=30&&prev.points.total>=30));
+    push("6 contracte de livrare",cur.counts.contracts>=6);
+    push("2 arme mici",num(member.smallWeapons)>=2);
+    push("2 arme mari",num(member.bigWeapons)>=2);
+    push("Licență Pilot HS",!!member.pilotHs);
+    push("1M în bancă",num(member.bankBalance)>=1000000);
+    push("3 angajări",cur.counts.recruit>=3);
+    push("3 anunțuri",cur.counts.announcements>=3);
+    push("RF pe o mașină extreme",!!member.rfLs);
+  }
+  if(member.rank==="Asociat"){
+    push("5 arme totale (2 mici + 3 mari)",num(member.smallWeapons)>=2&&num(member.bigWeapons)>=3);
+    push("Certificat Gunner",!!member.gunnerCertificate);
+    push("2M în bancă",num(member.bankBalance)>=2000000);
+    push("Elicopter LS",!!member.elicopterLs);
+    push("4 acțiuni ilegale în ultimele 3 săptămâni",three.counts.illegal>=4);
+    push("3 angajări",cur.counts.recruit>=3);
+    push("3 săptămâni de la ultima avansare sau 2 săptămâni cu 70P",since>=3||(cur.points.total>=70&&prev.points.total>=70));
+  }
+  return rows;
+}
+function promotionStatus(member){
+  const next=RANKS[RANKS.indexOf(member.rank)+1];
+  if(!next) return {status:"Top",missing:[],reason:"Rang maxim"};
+  const rows=criteria(member), missing=rows.filter(r=>!r.ok).map(r=>r.label), currentWeek=currentStats(member.id).points.total;
+  if(missing.length===0){
+    return {status:"Eligibil",missing:[],reason:"Toate condițiile îndeplinite"};
+  }
+  return {status:currentWeek>=30?"Lipsesc condiții":"Neeligibil",missing,reason:missing.join(" • ")};
+}
+function docsMissing(member){
+  const arr=[];
+  if(!member.bulletinUrl) arr.push("Buletin");
+  if(!member.hs) arr.push("HS");
+  if(member.rank!=="Șef de tură"&&!member.pilot) arr.push("Pilot");
+  return arr;
+}
+function statusBadge(s,title=""){
+  const t=title?` title="${esc(title)}"`:"";
+  if(s==="Eligibil") return `<span class="badge ok"${t}>Eligibil</span>`;
+  if(s==="Lipsesc condiții") return `<span class="badge warn"${t}>Lipsesc condiții</span>`;
+  if(s==="Neeligibil") return `<span class="badge bad"${t}>Neeligibil</span>`;
+  if(s==="Top") return `<span class="badge info"${t}>Top rank</span>`;
+  return `<span class="badge info"${t}>${esc(s)}</span>`;
+}
+function issueBadges(member){
+  const promo=promotionStatus(member);
+  const docs=docsMissing(member);
+  const cur=currentStats(member.id).points.total;
+  let out=[statusBadge(member.status)];
+  out.push(statusBadge(promo.status,promo.reason));
+  if(cur<30) out.push(`<span class="badge bad" title="Sub minimul de 30P">Sub minim</span>`);
+  if(cur===0) out.push(`<span class="badge bad" title="Nu are activitate în săptămâna curentă">Fără activitate</span>`);
+  if(docs.length) out.push(`<span class="badge warn" title="${esc(docs.join(' • '))}">Acte lipsă</span>`);
+  return out.join("");
+}
+function openModal(title,bodyHtml){
+  const root=document.getElementById("modalRoot");
+  root.className="modal-root active";
+  root.innerHTML=`<div class="overlay" id="modalOverlay"></div><div class="modal"><div class="modal-head"><h3>${title}</h3><button class="close-x" id="closeModalBtn">&times;</button></div>${bodyHtml}</div>`;
+  document.getElementById("modalOverlay").onclick=closeModal;
+  document.getElementById("closeModalBtn").onclick=closeModal;
+}
+function closeModal(){
+  const root=document.getElementById("modalRoot");
+  root.className="modal-root";
+  root.innerHTML="";
+}
+function switchTab(id){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+  document.querySelectorAll(".tab,.tab-content").forEach(t=>t.classList.toggle("active",t.id===id));
+}
+document.querySelectorAll(".tab-btn").forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+function memberForm(member={}, mode="add"){
+  const m={
+    nickname:member.nickname||"",name:member.name||"",rank:member.rank||"Șef de tură",status:member.status||"Activ",cnp:member.cnp||"",
+    phone:member.phone||"",carNumber:member.carNumber||"",hireDate:member.hireDate||"",lastPromotion:member.lastPromotion||"",
+    bulletinUrl:member.bulletinUrl||"",mentor:member.mentor||"",smallWeapons:num(member.smallWeapons),bigWeapons:num(member.bigWeapons),
+    bankBalance:num(member.bankBalance),notes:member.notes||"",hs:!!member.hs,pilot:!!member.pilot,rfLs:!!member.rfLs,elicopterLs:!!member.elicopterLs,heli:!!member.heli,pilotHs:!!member.pilotHs,knowsIndustrialSouth:!!member.knowsIndustrialSouth,locationCertificate:!!member.locationCertificate,gunnerCertificate:!!member.gunnerCertificate
+  };
+  const promo = member.id ? promotionStatus(member) : {status:"Nou",reason:"Membru nou"};
+  const cur = member.id ? currentStats(member.id) : {points:{total:0}, counts:{}};
+  const prev = member.id ? prevStats(member.id) : {points:{total:0}};
+  const missingDocs = member.id ? docsMissing(member) : [];
+  return `
+  <div class="modal-grid-2">
+    <div>
+      <div class="grid g4">
+        <div class="field"><label>Poreclă</label><input id="mf_nickname" value="${esc(m.nickname)}"></div>
+        <div class="field"><label>Nume</label><input id="mf_name" value="${esc(m.name)}"></div>
+        <div class="field"><label>Funcția</label><select id="mf_rank">${RANKS.map(r=>`<option value="${r}" ${m.rank===r?"selected":""}>${r}</option>`).join("")}</select></div>
+        <div class="field"><label>Status</label><select id="mf_status">${STATUSES.map(s=>`<option value="${s}" ${m.status===s?"selected":""}>${s}</option>`).join("")}</select></div>
+        <div class="field"><label>CNP</label><input id="mf_cnp" value="${esc(m.cnp)}"></div>
+        <div class="field"><label>Telefon</label><input id="mf_phone" value="${esc(m.phone)}"></div>
+        <div class="field"><label>Nr. Mașină</label><input id="mf_carNumber" value="${esc(m.carNumber)}"></div>
+        <div class="field"><label>Mentor</label><input id="mf_mentor" value="${esc(m.mentor)}"></div>
+        <div class="field"><label>Data angajare</label><input type="date" id="mf_hireDate" value="${esc(m.hireDate)}"></div>
+        <div class="field"><label>Ultima avansare</label><input type="date" id="mf_lastPromotion" value="${esc(m.lastPromotion)}"></div>
+        <div class="field"><label>Link buletin</label><input id="mf_bulletinUrl" value="${esc(m.bulletinUrl)}"></div>
+        <div class="field"><label>Bani în bancă</label><input type="number" id="mf_bankBalance" value="${m.bankBalance}"></div>
+        <div class="field"><label>Arme mici</label><input type="number" id="mf_smallWeapons" value="${m.smallWeapons}"></div>
+        <div class="field"><label>Arme mari</label><input type="number" id="mf_bigWeapons" value="${m.bigWeapons}"></div>
+        <div class="field" style="grid-column:span 2"><label>Observații</label><textarea id="mf_notes">${esc(m.notes)}</textarea></div>
+      </div>
+      <div class="hr"></div>
+      <div class="grid g4">
+        ${checkbox("mf_hs",m.hs,"HS")}
+        ${checkbox("mf_pilot",m.pilot,"Pilot")}
+        ${checkbox("mf_rfLs",m.rfLs,"RF LS")}
+        ${checkbox("mf_elicopterLs",m.elicopterLs,"Elicopter LS")}
+        ${checkbox("mf_heli",m.heli,"Heli")}
+        ${checkbox("mf_pilotHs",m.pilotHs,"Pilot HS")}
+        ${checkbox("mf_knowsIndustrialSouth",m.knowsIndustrialSouth,"Industrială Sud")}
+        ${checkbox("mf_locationCertificate",m.locationCertificate,"Certificat locații")}
+        ${checkbox("mf_gunnerCertificate",m.gunnerCertificate,"Certificat Gunner")}
+      </div>
+    </div>
+    <div class="modal-side">
+      <div class="mini">
+        <h3>Rezumat rapid</h3>
+        <div class="kpi"><span>Status promovare</span><strong>${promo.status}</strong></div>
+        <div class="kpi"><span>Puncte curente</span><strong>${cur.points.total}P</strong></div>
+        <div class="kpi"><span>Puncte precedente</span><strong>${prev.points.total}P</strong></div>
+        <div class="kpi"><span>Acte lipsă</span><strong>${missingDocs.length ? esc(missingDocs.join(", ")) : "Nimic"}</strong></div>
+      </div>
+      <div class="mini">
+        <h3>Observații utile</h3>
+        <div class="hint">${promo.reason ? esc(promo.reason) : "Completează datele și salvează."}</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" id="saveMemberBtn">${mode==="add"?"Adaugă membru":"Salvează"}</button>
+    <button class="btn secondary" id="cancelMemberBtn">Închide</button>
+  </div>`;
+}
+function checkbox(id,checked,label){
+  return `<label class="mini" style="display:flex;gap:10px;align-items:center;"><input type="checkbox" id="${id}" ${checked?"checked":""} style="width:auto"><span>${label}</span></label>`;
+}
+function memberFromForm(id){
+  return {
+    id,
+    nickname:document.getElementById("mf_nickname").value.trim(),
+    name:document.getElementById("mf_name").value.trim(),
+    rank:document.getElementById("mf_rank").value,
+    status:document.getElementById("mf_status").value,
+    cnp:document.getElementById("mf_cnp").value.trim(),
+    phone:document.getElementById("mf_phone").value.trim(),
+    carNumber:document.getElementById("mf_carNumber").value.trim(),
+    hireDate:document.getElementById("mf_hireDate").value,
+    lastPromotion:document.getElementById("mf_lastPromotion").value,
+    bulletinUrl:document.getElementById("mf_bulletinUrl").value.trim(),
+    mentor:document.getElementById("mf_mentor").value.trim(),
+    smallWeapons:num(document.getElementById("mf_smallWeapons").value),
+    bigWeapons:num(document.getElementById("mf_bigWeapons").value),
+    bankBalance:num(document.getElementById("mf_bankBalance").value),
+    notes:document.getElementById("mf_notes").value.trim(),
+    hs:document.getElementById("mf_hs").checked,
+    pilot:document.getElementById("mf_pilot").checked,
+    rfLs:document.getElementById("mf_rfLs").checked,
+    elicopterLs:document.getElementById("mf_elicopterLs").checked,
+    heli:document.getElementById("mf_heli").checked,
+    pilotHs:document.getElementById("mf_pilotHs").checked,
+    knowsIndustrialSouth:document.getElementById("mf_knowsIndustrialSouth").checked,
+    locationCertificate:document.getElementById("mf_locationCertificate").checked,
+    gunnerCertificate:document.getElementById("mf_gunnerCertificate").checked
+  };
+}
+function openAddMemberModal(){
+  openModal("Adaugă membru", memberForm({}, "add"));
+  document.getElementById("saveMemberBtn").onclick=()=>{
+    const data=memberFromForm(nextId(members));
+    if(!data.nickname||!data.name){alert("Completează cel puțin porecla și numele."); return;}
+    members.push(data); selectedMemberId=data.id; addHistory("member-add", `Membru adăugat: ${data.nickname}`, data.id); saveAll(); closeModal(); renderAll(); switchTab("members"); showToast("Membrul a fost adăugat.");
+  };
+  document.getElementById("cancelMemberBtn").onclick=closeModal;
+}
+function openEditMemberModal(id){
+  const member=memberById(id); if(!member) return;
+  openModal(`Editează membru · ${member.nickname}`, memberForm(member, "edit"));
+  document.getElementById("saveMemberBtn").onclick=()=>{
+    const idx=members.findIndex(m=>m.id===id);
+    members[idx]=memberFromForm(id);
+    selectedMemberId=id; addHistory("member-edit", `Profil actualizat: ${members[idx].nickname}`, id); saveAll(); closeModal(); renderAll(); showToast("Profilul membrului a fost salvat.");
+  };
+  document.getElementById("cancelMemberBtn").onclick=closeModal;
+}
+function openEditActivityModal(id){
+  const a=activities.find(x=>x.id===id); if(!a) return;
+  openModal("Editează activitate", `
+    <div class="grid g2">
+      <div class="field"><label>Membru</label><select id="ea_memberId">${members.map(m=>`<option value="${m.id}" ${m.id===a.memberId?"selected":""}>${esc(m.nickname)} · ${esc(m.rank)}</option>`).join("")}</select></div>
+      <div class="field"><label>Săptămână</label><select id="ea_weekId">${weeks.map(w=>`<option value="${w.id}" ${w.id===a.weekId?"selected":""}>${esc(w.label)}</option>`).join("")}</select></div>
+      <div class="field"><label>Categorie</label><select id="ea_category">${CATEGORY_OPTIONS.map(c=>`<option value="${c.key}" ${c.key===a.category?"selected":""}>${c.label}</option>`).join("")}</select></div>
+      <div class="field"><label>Cantitate</label><input type="number" id="ea_qty" min="1" value="${num(a.qty)}"></div>
+      <div class="field"><label>Puncte / unitate</label><input type="number" id="ea_ppu" min="1" value="${num(a.ppu)}"></div>
+      <div class="field"><label>Total</label><input id="ea_total" value="${num(a.points)}" disabled></div>
+    </div>
+    <div class="field" style="margin-top:12px;"><label>Detalii</label><textarea id="ea_description">${esc(a.description)}</textarea></div>
+    <div style="margin-top:14px;display:flex;gap:10px;">
+      <button class="btn" id="saveActivityBtn">Salvează</button>
+      <button class="btn red" id="deleteActivityBtn">Șterge</button>
+      <button class="btn secondary" id="cancelActivityBtn">Renunță</button>
+    </div>
+  `);
+  const recalc=()=>{document.getElementById("ea_total").value=num(document.getElementById("ea_qty").value)*num(document.getElementById("ea_ppu").value)}
+  document.getElementById("ea_qty").oninput=recalc; document.getElementById("ea_ppu").oninput=recalc;
+  document.getElementById("saveActivityBtn").onclick=()=>{
+    a.memberId=num(document.getElementById("ea_memberId").value);
+    a.weekId=num(document.getElementById("ea_weekId").value);
+    a.category=document.getElementById("ea_category").value;
+    a.qty=num(document.getElementById("ea_qty").value);
+    a.ppu=num(document.getElementById("ea_ppu").value);
+    a.points=a.qty*a.ppu;
+    a.description=document.getElementById("ea_description").value.trim();
+    addHistory("activity-edit", `Activitate editată pentru ${memberById(a.memberId)?.nickname||"necunoscut"}`, a.memberId); saveAll(); closeModal(); renderAll(); showToast("Activitatea a fost salvată.");
+  };
+  document.getElementById("deleteActivityBtn").onclick=()=>{activities=activities.filter(x=>x.id!==id); addHistory("activity-delete", `Activitate ștearsă`, a.memberId); saveAll(); closeModal(); renderAll(); showToast("Activitatea a fost ștearsă.","warn");};
+  document.getElementById("cancelActivityBtn").onclick=closeModal;
+}
+function renderDashboard(){
+  const eligible=members.filter(m=>promotionStatus(m).status==="Eligibil").length;
+  const below=members.filter(m=>currentStats(m.id).points.total<30).length;
+  const totalPoints=members.reduce((s,m)=>s+currentStats(m.id).points.total,0);
+  const topCurrent=topMembersBy(m=>currentStats(m.id).points.total);
+  const topIllegal=topMembersBy(m=>currentStats(m.id).points.illegal);
+  const topLS=topMembersBy(m=>currentStats(m.id).points.ls);
+  const topCayo=topMembersBy(m=>currentStats(m.id).points.cayo);
+  document.getElementById("dashboard").innerHTML=`
+    <div class="hero"><div class="hero-box"><div class="hero-title">Montvario Luxury Panel</div><div class="hero-sub">Panou premium pentru evidența membrilor, activităților și promovărilor. Design rafinat, structură mai clară și accent pe informațiile care contează la o privire.</div><div class="inline-badges" style="margin-top:12px;"><span class="pill">Mafia luxury</span><span class="pill">Arhivă 4 săptămâni</span><span class="pill">Promovări clare</span></div><div class="hero-kpis"><div class="hero-kpi"><div class="muted">Control membri</div><div class="metric" style="font-size:24px">Organizat</div></div><div class="hero-kpi"><div class="muted">Săptămâni</div><div class="metric" style="font-size:24px">4 arhive</div></div><div class="hero-kpi"><div class="muted">Promovări</div><div class="metric" style="font-size:24px">Verificate</div></div></div></div><div class="card"><h3>Focus rapid</h3><div class="list"><div class="mini"><strong>Registru compact</strong><div class="hint" style="margin-top:4px;">Mai ușor de citit și filtrat</div></div><div class="mini"><strong>Pop-up-uri curate</strong><div class="hint" style="margin-top:4px;">Add/Edit fără să încarce pagina</div></div><div class="mini"><strong>Eligibilitate clară</strong><div class="hint" style="margin-top:4px;">Badge-uri și tooltip-uri mai lizibile</div></div></div></div></div>
+    <div class="grid g4">
+      <div class="card"><div class="muted">Total membri</div><div class="metric">${members.length}</div></div>
+      <div class="card"><div class="muted">Eligibili acum</div><div class="metric">${eligible}</div></div>
+      <div class="card"><div class="muted">Sub minim</div><div class="metric">${below}</div></div>
+      <div class="card"><div class="muted">Puncte săpt. curentă</div><div class="metric">${totalPoints}</div></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px;">
+      <div class="card">
+        <h3>Ultimele 4 săptămâni</h3>
+        <div class="list">
+          ${weeks.map((w,i)=>`<div class="week-box"><span>${i===0?"Curentă":"Arhivă"}</span><strong>${esc(w.label)}</strong></div>`).join("")}
         </div>
-        <div class="grid cards-2" style="margin-top:16px;">
-          <div class="card">
-            <h3>Distribuție pe funcții</h3>
-            <div class="stack">
-              ${RANKS.map(rank => {
-                const count = members.filter(m => m.rank === rank).length;
-                const width = members.length ? (count / members.length) * 100 : 0;
-                return `
-                  <div>
-                    <div class="row-between"><span>${rank}</span><strong>${count}</strong></div>
-                    <div class="progress"><span style="width:${width}%"></span></div>
-                  </div>`;
-              }).join("")}
-            </div>
-          </div>
-          <div class="card">
-            <h3>Alertă rapidă</h3>
-            <div class="stack">
-              ${members.map(member => {
-                const promo = promotionStatus(member);
-                return `
-                  <div class="mini-card">
-                    <div class="row-between">
-                      <div>
-                        <div><strong>${member.nickname || "Fără poreclă"}</strong></div>
-                        <div class="muted">${member.rank}</div>
-                      </div>
-                      <div style="text-align:right;">
-                        <div><strong>${numberValue(member.points.currentWeek)}P</strong></div>
-                        <div style="margin-top:6px;">${statusBadge(promo.status)}</div>
-                      </div>
-                    </div>
-                  </div>`;
-              }).join("")}
-            </div>
-          </div>
-        </div>`;
+      </div>
+      <div class="card">
+        <h3>Distribuție pe funcții</h3>
+        <div class="list">
+          ${RANKS_DESC.map(r=>`<div class="kpi"><span>${r}</span><strong>${members.filter(m=>m.rank===r).length}</strong></div>`).join("")}
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <h3>Topuri rapide</h3>
+      <div class="top-grid" style="margin-top:12px;">
+        <div class="top-card"><h4>Top puncte</h4>${topCurrent.map((x,i)=>`<div class="top-item"><span>${i+1}. ${esc(x.member.nickname)}</span><strong>${x.value}P</strong></div>`).join("")||'<div class="hint">Fără date</div>'}</div>
+        <div class="top-card"><h4>Top ilegal</h4>${topIllegal.map((x,i)=>`<div class="top-item"><span>${i+1}. ${esc(x.member.nickname)}</span><strong>${x.value}P</strong></div>`).join("")||'<div class="hint">Fără date</div>'}</div>
+        <div class="top-card"><h4>Top LS</h4>${topLS.map((x,i)=>`<div class="top-item"><span>${i+1}. ${esc(x.member.nickname)}</span><strong>${x.value}P</strong></div>`).join("")||'<div class="hint">Fără date</div>'}</div>
+        <div class="top-card"><h4>Top Cayo</h4>${topCayo.map((x,i)=>`<div class="top-item"><span>${i+1}. ${esc(x.member.nickname)}</span><strong>${x.value}P</strong></div>`).join("")||'<div class="hint">Fără date</div>'}</div>
+      </div>
+    </div>`;
+}
+function renderMembers(){
+  let prevRank=null;
+  const rows=orderedMembers().map(m=>{
+    const cls=safeRankClass(m.rank);
+    const sep=(prevRank!==null&&prevRank!==m.rank)?`<tr class="sep"><td colspan="11"><div class="sep-line">${m.rank}</div></td></tr>`:"";
+    prevRank=m.rank;
+    return `${sep}
+    <tr class="${memberRowClass(m)}">
+      <td><strong>${esc(m.nickname)}</strong></td>
+      <td>${esc(m.name)}</td>
+      <td><span class="rank-chip rank-${cls}">${m.rank}</span></td>
+      <td>${esc(m.status)}</td>
+      <td>${esc(m.phone||"—")}</td>
+      <td>${esc(m.carNumber||"—")}</td>
+      <td>${m.lastPromotion?formatRO(m.lastPromotion):"—"}</td>
+      <td>${currentStats(m.id).points.total}</td>
+      <td><div class="inline-badges">${issueBadges(m)}</div></td>
+      <td>
+        <div class="controls">
+          <button class="btn small secondary" data-edit-member="${m.id}">Editează</button>
+          <button class="btn small secondary" data-view-member="${m.id}">Profil</button>
+          <button class="btn small secondary" data-promote="${m.id}" ${RANKS.indexOf(m.rank)===RANKS.length-1?"disabled":""}>UP</button>
+          <button class="btn small secondary" data-demote="${m.id}" ${RANKS.indexOf(m.rank)===0?"disabled":""}>DOWN</button>
+          <button class="btn small red" data-delete-member="${m.id}">Șterge</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+  document.getElementById("members").innerHTML=`
+    <div class="card">
+      <div class="toolbar"><div><h3>${icon("▣")}Registru membri</h3><p class="subtitle">Ordinea este Made Man → Șef de tură. UP promovează, DOWN retrogradează.</p></div><div class="controls">
+        <div style="min-width:220px;flex:1"><input id="memberSearch" placeholder="Caută după poreclă, nume, telefon, CNP" value="${esc(memberSearch)}"></div>
+        <div style="min-width:180px"><select id="rankFilter">${['all',...RANKS_DESC].map(r=>`<option value="${r}" ${rankFilter===r?"selected":""}>${r==='all'?'Toate funcțiile':r}</option>`).join("")}</select></div>
+        <div style="min-width:180px"><select id="statusFilter">${['all',...STATUSES].map(s=>`<option value="${s}" ${statusFilter===s?"selected":""}>${s==='all'?'Toate statusurile':s}</option>`).join("")}</select></div>
+      </div><div class="inline-badges"><span class="pill">Sortare pe grade</span><span class="pill">Filtrare rapidă</span><span class="pill">Editare directă</span></div></div>
+      <div class="table-wrap">
+        <table class="compact">
+          <thead><tr><th>Poreclă</th><th>Nume</th><th>Funcția</th><th>Status</th><th>Telefon</th><th>Mașină</th><th>Ultima avansare</th><th>Puncte curente</th><th>Badge-uri</th><th>Acțiuni</th></tr></thead>
+          <tbody>${rows || `<tr><td colspan="10">Nu există membri.</td></tr>`}</tbody>
+        </table>
+      </div>
+    </div>`;
+  document.getElementById("memberSearch").oninput=e=>{memberSearch=e.target.value; renderMembers();};
+  document.getElementById("rankFilter").onchange=e=>{rankFilter=e.target.value; renderMembers();};
+  document.getElementById("statusFilter").onchange=e=>{statusFilter=e.target.value; renderMembers();};
+  document.querySelectorAll("[data-edit-member]").forEach(b=>b.onclick=()=>openEditMemberModal(num(b.dataset.editMember)));
+  document.querySelectorAll("[data-view-member]").forEach(b=>b.onclick=()=>{selectedMemberId=num(b.dataset.viewMember); renderProfile(); switchTab("profile");});
+  document.querySelectorAll("[data-delete-member]").forEach(b=>b.onclick=()=>{
+    const id=num(b.dataset.deleteMember), m=memberById(id);
+    if(confirm(`Sigur vrei să ștergi pe ${m?.nickname||'acest membru'}?`)){
+      members=members.filter(x=>x.id!==id);
+      activities=activities.filter(a=>a.memberId!==id);
+      if(selectedMemberId===id) selectedMemberId=members[0]?.id||0;
+      saveAll(); renderAll(); showToast("Membrul a fost șters.","warn");
     }
-
-    function renderGuide() {
-      document.getElementById("guide").innerHTML = `
-        <div class="grid cards-2">
-          ${GUIDE.map(section => `
-            <div class="card">
-              <h3>${section.rank}</h3>
-              <p class="muted" style="margin-bottom:14px;">${section.description}</p>
-              <div class="stack">
-                <div>
-                  <strong>Roluri</strong>
-                  <ul class="clean" style="margin-top:8px;">
-                    ${section.roles.map(role => `<li>${role}</li>`).join("")}
-                  </ul>
-                </div>
-                <div>
-                  <strong>${section.promotionTo ? `Cerințe pentru promovare la ${section.promotionTo}` : "Cerințe pentru păstrarea rangului"}</strong>
-                  <ul class="clean" style="margin-top:8px;">
-                    ${section.requirements.map(req => `<li>${req}</li>`).join("")}
-                  </ul>
-                </div>
-              </div>
-            </div>`).join("")}
-        </div>`;
-    }
-
-    function renderPoints() {
-      document.getElementById("points").innerHTML = `
-        <div class="card">
-          <h3>Evidență puncte pe membri</h3>
-          <div class="table-wrap" style="margin-top:14px;">
-            <table>
-              <thead>
-                <tr>
-                  <th>Poreclă</th>
-                  <th>Anunțuri de angajare</th>
-                  <th>Angajare</th>
-                  <th>Contracte de livrare</th>
-                  <th>Activitate ilegală</th>
-                  <th>Activități LS</th>
-                  <th>Activități Cayo</th>
-                  <th>Evenimente</th>
-                  <th>Componente</th>
-                  <th>Săpt. curentă</th>
-                  <th>Săpt. trecută</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${filteredMembers().map(member => `
-                  <tr>
-                    <td><strong>${member.nickname}</strong></td>
-                    <td>${numberValue(member.points.announcements)}</td>
-                    <td>${numberValue(member.points.recruit)}</td>
-                    <td>${numberValue(member.points.contracts)}</td>
-                    <td>${numberValue(member.points.illegal)}</td>
-                    <td>${numberValue(member.points.ls)}</td>
-                    <td>${numberValue(member.points.cayo)}</td>
-                    <td>${numberValue(member.points.events)}</td>
-                    <td>${numberValue(member.points.components)}</td>
-                    <td><strong>${numberValue(member.points.currentWeek)}</strong></td>
-                    <td>${numberValue(member.points.previousWeek)}</td>
-                  </tr>`).join("")}
-              </tbody>
-            </table>
-          </div>
-        </div>`;
-    }
-
-    function renderMembers() {
-      document.getElementById("members").innerHTML = `
-        <div class="card">
-          <div class="row-between" style="margin-bottom:16px; flex-wrap:wrap; align-items:flex-end;">
-            <div>
-              <h3>Registru membri</h3>
-            </div>
-            <div class="controls">
-              <div style="min-width:260px;"><input id="searchInput" placeholder="Caută după poreclă sau nume" value="${escapeHtml(query)}"></div>
-              <div style="min-width:220px;">
-                <select id="rankFilter">
-                  <option value="all">Toate funcțiile</option>
-                  ${RANKS.map(rank => `<option value="${rank}" ${rankFilter === rank ? "selected" : ""}>${rank}</option>`).join("")}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Poreclă</th>
-                  <th>Nume</th>
-                  <th>Funcția</th>
-                  <th>CNP</th>
-                  <th>Luni</th>
-                  <th>Tel.</th>
-                  <th>Nr. Mașină</th>
-                  <th>Data angajare</th>
-                  <th>Ultima avansare</th>
-                  <th>Buletin</th>
-                  <th>HS</th>
-                  <th>Pilot</th>
-                  <th>RF LS</th>
-                  <th>Elicopter LS</th>
-                  <th>Heli</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${filteredMembers().map(member => `
-                  <tr>
-                    <td><strong>${member.nickname}</strong></td>
-                    <td>${member.name}</td>
-                    <td>${member.rank}</td>
-                    <td>${member.cnp}</td>
-                    <td>${numberValue(member.months)}</td>
-                    <td>${member.phone}</td>
-                    <td>${member.carNumber}</td>
-                    <td>${member.hireDate || "—"}</td>
-                    <td>${member.lastPromotion || "—"}</td>
-                    <td>${member.bulletinUrl ? `<a href="${member.bulletinUrl}" target="_blank"><button class="link-btn" type="button">Vezi buletin</button></a>` : "—"}</td>
-                    <td>${boolText(member.hs)}</td>
-                    <td>${boolText(member.pilot)}</td>
-                    <td>${boolText(member.rfLs)}</td>
-                    <td>${boolText(member.elicopterLs)}</td>
-                    <td>${boolText(member.heli)}</td>
-                    <td><span class="badge">${member.status}</span></td>
-                  </tr>`).join("")}
-              </tbody>
-            </table>
-          </div>
-        </div>`;
-
-      document.getElementById("searchInput").addEventListener("input", e => {
-        query = e.target.value;
-        renderMembers();
-        renderPoints();
-      });
-      document.getElementById("rankFilter").addEventListener("change", e => {
-        rankFilter = e.target.value;
-        renderMembers();
-        renderPoints();
-      });
-    }
-
-    function renderProfile() {
-      const selected = getSelectedMember();
-      if (!selected) {
-        document.getElementById("profile").innerHTML = `<div class="card"><p>Nu există membri.</p></div>`;
-        return;
-      }
-      const promo = promotionStatus(selected);
-      document.getElementById("profile").innerHTML = `
-        <div class="card">
-          <div class="row-between" style="margin-bottom:16px; flex-wrap:wrap; align-items:flex-end;">
-            <h3>Fișă membru</h3>
-            <div style="min-width:260px;">
-              <select id="profileSelect">
-                ${members.map(member => `<option value="${member.id}" ${member.id === selected.id ? "selected" : ""}>${member.nickname || "Fără poreclă"} · ${member.rank}</option>`).join("")}
-              </select>
-            </div>
-          </div>
-          <div class="profile-grid">
-            <div class="card" style="box-shadow:none;">
-              <h3>${selected.nickname || "Fără poreclă"}</h3>
-              <div class="stack muted" style="color:#334155;">
-                <div><strong>Nume:</strong> ${selected.name || "—"}</div>
-                <div><strong>Funcție:</strong> ${selected.rank}</div>
-                <div><strong>Data angajare:</strong> ${selected.hireDate || "—"}</div>
-                <div><strong>Ultima avansare:</strong> ${selected.lastPromotion || "—"}</div>
-                <div><strong>Mentor:</strong> ${selected.mentor || "—"}</div>
-                <div><strong>Sold bancă:</strong> ${numberValue(selected.bankBalance).toLocaleString("ro-RO")} $</div>
-                <div><strong>Arme mici:</strong> ${numberValue(selected.smallWeapons)}</div>
-                <div><strong>Arme mari:</strong> ${numberValue(selected.bigWeapons)}</div>
-              </div>
-            </div>
-            <div class="card" style="box-shadow:none;">
-              <h3>Punctaj</h3>
-              <div class="stack">
-                <div class="row-between"><span>Săpt. curentă</span><strong>${numberValue(selected.points.currentWeek)}P</strong></div>
-                <div class="row-between"><span>Săpt. trecută</span><strong>${numberValue(selected.points.previousWeek)}P</strong></div>
-                <div class="row-between"><span>Activitate ilegală</span><span>${numberValue(selected.points.illegal)}P</span></div>
-                <div class="row-between"><span>Activități LS</span><span>${numberValue(selected.points.ls)}P</span></div>
-                <div class="row-between"><span>Activități Cayo</span><span>${numberValue(selected.points.cayo)}P</span></div>
-                <div class="row-between"><span>Evenimente</span><span>${numberValue(selected.points.events)}P</span></div>
-                <div class="row-between"><span>Componente</span><span>${numberValue(selected.points.components)}P</span></div>
-              </div>
-            </div>
-            <div class="card" style="box-shadow:none;">
-              <h3>Promovare</h3>
-              <div class="stack">
-                <div class="row-between"><span>Status</span>${statusBadge(promo.status)}</div>
-                <div>
-                  <strong>Ce lipsește</strong>
-                  ${promo.missing.length ? `<ul class="clean" style="margin-top:8px;">${promo.missing.map(item => `<li>${item}</li>`).join("")}</ul>` : `<p class="muted" style="margin-top:8px;">Toate condițiile sunt îndeplinite.</p>`}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card" style="box-shadow:none; margin-top:16px;">
-            <h3>Documente și licențe</h3>
-            <div class="doc-grid" style="margin-top:12px;">
-              <div class="mini-card">Buletin: <strong>${selected.bulletinUrl ? "Link imagine" : "Lipsă"}</strong></div>
-              <div class="mini-card">HS: <strong>${boolText(selected.hs)}</strong></div>
-              <div class="mini-card">Pilot: <strong>${boolText(selected.pilot)}</strong></div>
-              <div class="mini-card">RF LS: <strong>${boolText(selected.rfLs)}</strong></div>
-              <div class="mini-card">Elicopter LS: <strong>${boolText(selected.elicopterLs)}</strong></div>
-              <div class="mini-card">Heli: <strong>${boolText(selected.heli)}</strong></div>
-              <div class="mini-card">Certificat locații: <strong>${boolText(selected.locationCertificate)}</strong></div>
-              <div class="mini-card">Certificat Gunner: <strong>${boolText(selected.gunnerCertificate)}</strong></div>
-            </div>
-          </div>
-        </div>`;
-
-      document.getElementById("profileSelect").addEventListener("change", e => {
-        selectedMemberId = Number(e.target.value);
-        editingId = selectedMemberId;
-        isCreating = false;
-        renderProfile();
-        renderEditor();
-      });
-    }
-
-    function emptyMember(nextId) {
-      return {
-        id: nextId,
-        nickname: "",
-        name: "",
-        rank: "Șef de tură",
-        cnp: "",
-        months: 0,
-        phone: "",
-        carNumber: "",
-        hireDate: "",
-        lastPromotion: "",
-        bulletinUrl: "",
-        hs: false,
-        pilot: false,
-        rfLs: false,
-        elicopterLs: false,
-        heli: false,
-        pilotHs: false,
-        status: "Activ",
-        mentor: "",
-        knowsIndustrialSouth: false,
-        locationCertificate: false,
-        gunnerCertificate: false,
-        smallWeapons: 0,
-        bigWeapons: 0,
-        bankBalance: 0,
-        notes: "",
-        points: { announcements: 0, recruit: 0, contracts: 0, illegal: 0, ls: 0, cayo: 0, events: 0, components: 0, currentWeek: 0, previousWeek: 0 }
+  });
+  document.querySelectorAll("[data-promote]").forEach(b=>b.onclick=()=>{
+    const id=num(b.dataset.promote), m=memberById(id); if(!m) return;
+    const i=RANKS.indexOf(m.rank); if(i<RANKS.length-1){m.rank=RANKS[i+1]; m.lastPromotion=new Date().toISOString().slice(0,10); addHistory("promote", `Promovat: ${m.nickname} la ${m.rank}`, id); saveAll(); renderAll(); showToast("Membrul a fost promovat.");}
+  });
+  document.querySelectorAll("[data-demote]").forEach(b=>b.onclick=()=>{
+    const id=num(b.dataset.demote), m=memberById(id); if(!m) return;
+    const i=RANKS.indexOf(m.rank); if(i>0){m.rank=RANKS[i-1]; m.lastPromotion=new Date().toISOString().slice(0,10); addHistory("demote", `Retrogradat: ${m.nickname} la ${m.rank}`, id); saveAll(); renderAll(); showToast("Membrul a fost retrogradat.","warn");}
+  });
+}
+function bulkRowHtml(row,i){
+  return `<div class="activity-row">
+    <div class="field"><label>Tip activitate</label><select data-br-field="category" data-br-index="${i}">${CATEGORY_OPTIONS.map(c=>`<option value="${c.key}" ${row.category===c.key?"selected":""}>${c.label}</option>`).join("")}</select></div>
+    <div class="field"><label>Cant.</label><input type="number" min="1" data-br-field="qty" data-br-index="${i}" value="${num(row.qty)||1}"></div>
+    <div class="field"><label>P / unit</label><input type="number" min="1" data-br-field="ppu" data-br-index="${i}" value="${num(row.ppu)||1}"></div>
+    <div class="field"><label>Detalii</label><input data-br-field="description" data-br-index="${i}" value="${esc(row.description||"")}"></div>
+    <button class="btn small red" type="button" data-remove-row="${i}">Șterge</button>
+  </div>`;
+}
+function renderActivities(){
+  const recent=[...activities].sort((a,b)=>b.id-a.id).slice(0,18);
+  document.getElementById("activities").innerHTML=`
+    <div class="grid g2">
+      <div class="card">
+        <h3>Adăugare multiplă de activități</h3>
+        <div class="grid g2" style="margin-top:14px;">
+          <div class="field"><label>Membru</label><select id="bulkMember">${members.map(m=>`<option value="${m.id}" ${preselectedMemberId()==m.id?"selected":""}>${esc(m.nickname)} · ${esc(m.rank)}</option>`).join("")}</select></div>
+          <div class="field"><label>Săptămână / interval</label><select id="bulkWeek">${weeks.map(w=>`<option value="${w.id}" ${w.id===weeks[0].id?"selected":""}>${esc(w.label)}</option>`).join("")}</select></div>
+        </div>
+        <div class="hr"></div>
+        <div class="controls">${PRESETS.map((p,i)=>`<button class="btn secondary small" data-add-preset="${i}" type="button">${p.label}</button>`).join("")}</div>
+        <div style="margin-top:12px;" id="bulkRows">${bulkRows.map((r,i)=>bulkRowHtml(r,i)).join("")}</div>
+        <div class="controls" style="margin-top:12px;">
+          <button class="btn secondary small" id="addBulkRow">+ Rând</button>
+          <button class="btn" id="saveBulk">Salvează tot</button>
+        </div>
+        <div class="hr"></div>
+        <h3>Administrare intervale</h3>
+        <div class="list" style="margin-top:12px;">
+          ${weeks.map((w,i)=>`<div class="week-box"><div><strong>${i===0?"Curentă":"Arhivă"}</strong><div class="hint">${esc(w.label)}</div></div>${i===0?`<button class="btn small secondary" id="editCurrentWeek">Modifică</button>`:''}</div>`).join("")}
+        </div>
+      </div>
+      <div class="card">
+        <h3>${icon("✦")}Ultimele activități</h3>
+        <div class="list" style="margin-top:14px;">
+          ${recent.map(a=>{
+            const m=memberById(a.memberId), w=weekById(a.weekId), c=CATEGORY_OPTIONS.find(x=>x.key===a.category)?.label||a.category;
+            return `<div class="mini"><div class="inline-badges"><span class="badge info">${esc(w?.label||"-")}</span><span class="badge info">${esc(c)}</span></div><div style="margin-top:8px;"><strong>${esc(m?.nickname||"Necunoscut")}</strong> · ${num(a.qty)} x ${num(a.ppu)} = <strong>${num(a.points)}P</strong></div><div class="hint" style="margin-top:4px;">${esc(a.description||"—")}</div><div style="margin-top:8px;"><button class="btn small secondary" data-edit-activity="${a.id}">Editează</button></div></div>`;
+          }).join("") || `<div class="mini">Nu există activități.</div>`}
+        </div>
+      </div>
+    </div>`;
+  function bindBulk(){
+    document.querySelectorAll("[data-br-field]").forEach(el=>{
+      el.oninput=()=>{
+        const i=num(el.dataset.brIndex), f=el.dataset.brField;
+        bulkRows[i][f]=(f==="description"||f==="category")?el.value:num(el.value);
       };
-    }
-
-    function renderEditor() {
-      let member = getEditingMember();
-      if (!member && members.length) member = members[0];
-      if (!member) {
-        const fresh = emptyMember(1);
-        members = [fresh];
-        member = fresh;
-      }
-      const promo = promotionStatus(member);
-
-      document.getElementById("editor").innerHTML = `
-        <div class="card">
-          <div class="row-between" style="margin-bottom:16px; flex-wrap:wrap; align-items:flex-end;">
-            <div>
-              <h3>${isCreating ? "Adaugă membru" : `Editează membru · ${member.nickname || "Fără poreclă"}`}</h3>
-            </div>
-            <div>
-              <button class="btn" id="saveEditorBtn">Salvează</button>
-              <span class="notice" id="saveNotice"></span>
-            </div>
-          </div>
-
-          <div class="grid cards-4">
-            ${field("Poreclă", `<input id="f_nickname" value="${escapeHtml(member.nickname)}">`)}
-            ${field("Nume", `<input id="f_name" value="${escapeHtml(member.name)}">`)}
-            ${field("Funcția", `<select id="f_rank">${RANKS.map(rank => `<option value="${rank}" ${member.rank === rank ? "selected" : ""}>${rank}</option>`).join("")}</select>`)}
-            ${field("Status", `<select id="f_status">${STATUSES.map(status => `<option value="${status}" ${member.status === status ? "selected" : ""}>${status}</option>`).join("")}</select>`)}
-            ${field("CNP", `<input id="f_cnp" value="${escapeHtml(member.cnp)}">`)}
-            ${field("Luni", `<input type="number" id="f_months" value="${numberValue(member.months)}">`)}
-            ${field("Tel.", `<input id="f_phone" value="${escapeHtml(member.phone)}">`)}
-            ${field("Nr. Mașină", `<input id="f_carNumber" value="${escapeHtml(member.carNumber)}">`)}
-            ${field("Data angajare", `<input type="date" id="f_hireDate" value="${member.hireDate || ""}">`)}
-            ${field("Ultima avansare", `<input type="date" id="f_lastPromotion" value="${member.lastPromotion || ""}">`)}
-            ${field("Buletin - link poză", `<input id="f_bulletinUrl" value="${escapeHtml(member.bulletinUrl)}">`)}
-            ${field("Mentor", `<input id="f_mentor" value="${escapeHtml(member.mentor)}">`)}
-            ${field("Arme mici", `<input type="number" id="f_smallWeapons" value="${numberValue(member.smallWeapons)}">`)}
-            ${field("Arme mari", `<input type="number" id="f_bigWeapons" value="${numberValue(member.bigWeapons)}">`)}
-            ${field("Sold bancă", `<input type="number" id="f_bankBalance" value="${numberValue(member.bankBalance)}">`)}
-            ${field("Observații", `<textarea id="f_notes">${escapeHtml(member.notes || "")}</textarea>`)}
-          </div>
-
-          <div style="margin-top:18px;">
-            <h3>Documente și certificări</h3>
-            <div class="checkbox-grid" style="margin-top:12px;">
-              ${check("f_hs", member.hs, "HS")}
-              ${check("f_pilot", member.pilot, "Pilot")}
-              ${check("f_rfLs", member.rfLs, "RF LS")}
-              ${check("f_elicopterLs", member.elicopterLs, "Elicopter LS")}
-              ${check("f_heli", member.heli, "Heli")}
-              ${check("f_pilotHs", member.pilotHs, "Pilot HS")}
-              ${check("f_knowsIndustrialSouth", member.knowsIndustrialSouth, "Cunoaște Industrială Sud")}
-              ${check("f_locationCertificate", member.locationCertificate, "Certificat locații")}
-              ${check("f_gunnerCertificate", member.gunnerCertificate, "Certificat Gunner")}
-            </div>
-          </div>
-
-          <div style="margin-top:18px;">
-            <h3>Puncte introduse manual</h3>
-            <div class="grid cards-5" style="margin-top:12px;">
-              ${field("Anunțuri de angajare", `<input type="number" id="p_announcements" value="${numberValue(member.points.announcements)}">`)}
-              ${field("Angajare", `<input type="number" id="p_recruit" value="${numberValue(member.points.recruit)}">`)}
-              ${field("Contracte de livrare", `<input type="number" id="p_contracts" value="${numberValue(member.points.contracts)}">`)}
-              ${field("Activitate ilegală", `<input type="number" id="p_illegal" value="${numberValue(member.points.illegal)}">`)}
-              ${field("Activități LS", `<input type="number" id="p_ls" value="${numberValue(member.points.ls)}">`)}
-              ${field("Activități Cayo", `<input type="number" id="p_cayo" value="${numberValue(member.points.cayo)}">`)}
-              ${field("Evenimente", `<input type="number" id="p_events" value="${numberValue(member.points.events)}">`)}
-              ${field("Componente", `<input type="number" id="p_components" value="${numberValue(member.points.components)}">`)}
-              ${field("Săpt. curentă", `<input type="number" id="p_currentWeek" value="${numberValue(member.points.currentWeek)}">`)}
-              ${field("Săpt. trecută", `<input type="number" id="p_previousWeek" value="${numberValue(member.points.previousWeek)}">`)}
-            </div>
-          </div>
-
-          <div class="card" style="box-shadow:none; margin-top:18px;">
-            <h3>Previzualizare status promovare</h3>
-            <div class="stack" style="margin-top:12px;">
-              <div class="row-between"><span>Membru</span><strong>${member.nickname || "Fără poreclă"}</strong></div>
-              <div class="row-between"><span>Status</span>${statusBadge(promo.status)}</div>
-              <div>
-                <strong>Ce lipsește</strong>
-                ${promo.missing.length ? `<ul class="clean" style="margin-top:8px;">${promo.missing.map(item => `<li>${item}</li>`).join("")}</ul>` : `<p class="muted" style="margin-top:8px;">Toate condițiile sunt îndeplinite.</p>`}
-              </div>
-            </div>
-          </div>
-        </div>`;
-
-      document.getElementById("saveEditorBtn").addEventListener("click", () => {
-        const data = collectEditor(member.id);
-        const index = members.findIndex(m => m.id === member.id);
-        if (index >= 0) members[index] = data;
-        else members.push(data);
-        saveMembers();
-        selectedMemberId = data.id;
-        editingId = data.id;
-        isCreating = false;
-        renderAll();
-        document.getElementById("saveNotice").textContent = "Membrul a fost salvat.";
-      });
-    }
-
-    function collectEditor(id) {
-      return {
-        id,
-        nickname: valueOf("f_nickname"),
-        name: valueOf("f_name"),
-        rank: valueOf("f_rank"),
-        cnp: valueOf("f_cnp"),
-        months: numberValue(valueOf("f_months")),
-        phone: valueOf("f_phone"),
-        carNumber: valueOf("f_carNumber"),
-        hireDate: valueOf("f_hireDate"),
-        lastPromotion: valueOf("f_lastPromotion"),
-        bulletinUrl: valueOf("f_bulletinUrl"),
-        hs: checkedOf("f_hs"),
-        pilot: checkedOf("f_pilot"),
-        rfLs: checkedOf("f_rfLs"),
-        elicopterLs: checkedOf("f_elicopterLs"),
-        heli: checkedOf("f_heli"),
-        pilotHs: checkedOf("f_pilotHs"),
-        status: valueOf("f_status"),
-        mentor: valueOf("f_mentor"),
-        knowsIndustrialSouth: checkedOf("f_knowsIndustrialSouth"),
-        locationCertificate: checkedOf("f_locationCertificate"),
-        gunnerCertificate: checkedOf("f_gunnerCertificate"),
-        smallWeapons: numberValue(valueOf("f_smallWeapons")),
-        bigWeapons: numberValue(valueOf("f_bigWeapons")),
-        bankBalance: numberValue(valueOf("f_bankBalance")),
-        notes: valueOf("f_notes"),
-        points: {
-          announcements: numberValue(valueOf("p_announcements")),
-          recruit: numberValue(valueOf("p_recruit")),
-          contracts: numberValue(valueOf("p_contracts")),
-          illegal: numberValue(valueOf("p_illegal")),
-          ls: numberValue(valueOf("p_ls")),
-          cayo: numberValue(valueOf("p_cayo")),
-          events: numberValue(valueOf("p_events")),
-          components: numberValue(valueOf("p_components")),
-          currentWeek: numberValue(valueOf("p_currentWeek")),
-          previousWeek: numberValue(valueOf("p_previousWeek"))
-        }
-      };
-    }
-
-    function valueOf(id) {
-      return document.getElementById(id)?.value || "";
-    }
-
-    function checkedOf(id) {
-      return !!document.getElementById(id)?.checked;
-    }
-
-    function field(label, html) {
-      return `<div class="field"><label>${label}</label>${html}</div>`;
-    }
-
-    function check(id, checked, label) {
-      return `<label class="check"><input type="checkbox" id="${id}" ${checked ? "checked" : ""}><span>${label}</span></label>`;
-    }
-
-    function escapeHtml(str) {
-      return String(str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;");
-    }
-
-    function renderAll() {
-      renderDashboard();
-      renderGuide();
-      renderPoints();
-      renderMembers();
-      renderProfile();
-      renderEditor();
-    }
-
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById(btn.dataset.tab).classList.add("active");
-      });
+      el.onchange=el.oninput;
     });
-
-    document.getElementById("addMemberBtn").addEventListener("click", () => {
-      const nextId = members.length ? Math.max(...members.map(m => m.id)) + 1 : 1;
-      const fresh = emptyMember(nextId);
-      members.push(fresh);
-      editingId = nextId;
-      selectedMemberId = nextId;
-      isCreating = true;
-      saveMembers();
-      renderAll();
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-      document.querySelector('[data-tab="editor"]').classList.add("active");
-      document.getElementById("editor").classList.add("active");
+    document.querySelectorAll("[data-remove-row]").forEach(btn=>btn.onclick=()=>{bulkRows.splice(num(btn.dataset.removeRow),1); if(!bulkRows.length) bulkRows=[{category:"announcements",qty:1,ppu:1,description:""}]; renderActivities();});
+    document.querySelectorAll("[data-add-preset]").forEach(btn=>btn.onclick=()=>{const p=PRESETS[num(btn.dataset.addPreset)]; bulkRows.push({category:p.category,qty:p.qty,ppu:p.ppu,description:p.description}); renderActivities();});
+  }
+  bindBulk();
+  document.getElementById("addBulkRow").onclick=()=>{bulkRows.push({category:"announcements",qty:1,ppu:1,description:""}); renderActivities();};
+  document.getElementById("saveBulk").onclick=()=>{
+    const memberId=num(document.getElementById("bulkMember").value), weekId=num(document.getElementById("bulkWeek").value);
+    const valid=bulkRows.filter(r=>num(r.qty)>0&&num(r.ppu)>0);
+    if(!valid.length){alert("Adaugă cel puțin un rând valid."); return;}
+    valid.forEach(r=>{
+      activities.push({id:nextId(activities),weekId,memberId,category:r.category,qty:num(r.qty),ppu:num(r.ppu),points:num(r.qty)*num(r.ppu),description:(r.description||"").trim(),createdAt:new Date().toISOString()});
     });
+    selectedMemberId=memberId;
+    addHistory("activity-add", `Raport activități salvat (${valid.length} rânduri)`, memberId);
+    bulkRows=[{category:"announcements",qty:1,ppu:1,description:""}];
+    saveAll(); renderAll(); showToast("Activitățile au fost salvate.");
+  };
+  document.querySelectorAll("[data-edit-activity]").forEach(b=>b.onclick=()=>openEditActivityModal(num(b.dataset.editActivity)));
+  const btnEditWeek=document.getElementById("editCurrentWeek");
+  if(btnEditWeek) btnEditWeek.onclick=()=>{
+    const w=currentWeek();
+    openModal("Modifică intervalul curent", `
+      <div class="grid g2">
+        <div class="field"><label>Start</label><input type="date" id="weekStartEdit" value="${esc(w.start)}"></div>
+        <div class="field"><label>End</label><input type="date" id="weekEndEdit" value="${esc(w.end)}"></div>
+      </div>
+      <div class="controls" style="margin-top:14px;">
+        <button class="btn" id="saveWeekEdit">Salvează interval</button>
+        <button class="btn secondary" id="archiveWeek">Arhivează și creează interval nou</button>
+      </div>`);
+    document.getElementById("saveWeekEdit").onclick=()=>{
+      w.start=document.getElementById("weekStartEdit").value;
+      w.end=document.getElementById("weekEndEdit").value;
+      w.label=intervalLabel(w.start,w.end);
+      saveAll(); closeModal(); renderAll();
+    };
+    document.getElementById("archiveWeek").onclick=()=>{
+      w.start=document.getElementById("weekStartEdit").value;
+      w.end=document.getElementById("weekEndEdit").value;
+      w.label=intervalLabel(w.start,w.end);
+      const newStart=w.end||w.start;
+      const newId=nextId(weeks);
+      weeks.unshift({id:newId,start:newStart,end:newStart,label:intervalLabel(newStart,newStart)});
+      weeks=weeks.slice(0,4);
+      const keep=new Set(weeks.map(x=>x.id));
+      activities=activities.filter(a=>keep.has(a.weekId));
+      saveAll(); closeModal(); renderAll();
+    };
+  };
+}
+function preselectedMemberId(){return selectedMemberId||members[0]?.id||0}
+let pointsSortKey="currentWeek";
+let pointsSortDir="desc";
 
-    renderAll();
-  </script>
+function icon(sym){ return `<span class="icon">${sym}</span>`; }
+
+function exportMeetingCsv(){
+  const headers=[["Porecla","Nume","Functia","StatusPromovare","Motive/Lipsuri","PuncteCurente","PunctePrecedente"]];
+  const rows=orderedMembers().map(m=>{
+    const promo=promotionStatus(m);
+    return [m.nickname,m.name,m.rank,promo.status,promo.reason,currentStats(m.id).points.total,prevStats(m.id).points.total];
+  });
+  const csv=[...headers,...rows].map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="montvario_sedinta.csv";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),500);
+  showToast("Exportul pentru ședință a fost generat.");
+}
+
+function sortedPointsMembers(){
+  const rows=orderedMembers().map(m=>{
+    const cur=currentStats(m.id), prev=prevStats(m.id), promo=promotionStatus(m);
+    return {
+      member:m,
+      announcements:cur.points.announcements,
+      recruit:cur.points.recruit,
+      contracts:cur.points.contracts,
+      illegal:cur.points.illegal,
+      ls:cur.points.ls,
+      cayo:cur.points.cayo,
+      events:cur.points.events,
+      components:cur.points.components,
+      currentWeek:cur.points.total,
+      previousWeek:prev.points.total,
+      promo
+    };
+  });
+  rows.sort((a,b)=>{
+    const av=a[pointsSortKey], bv=b[pointsSortKey];
+    const cmp=(typeof av==="string"?String(av).localeCompare(String(bv),"ro"): (av-bv));
+    return pointsSortDir==="asc" ? cmp : -cmp;
+  });
+  return rows;
+}
+function renderPoints(){
+  const rows = sortedPointsMembers();
+  const head = (key,label)=>`<button class="sort-btn" data-sort="${key}">${label}${pointsSortKey===key?(pointsSortDir==="asc"?" ↑":" ↓"):""}</button>`;
+  document.getElementById("points").innerHTML=`
+    <div class="card">
+      <div class="section-title">
+        <div>
+          <h3>${icon("◈")}Evidență puncte</h3>
+          <div class="hint">Curentă: ${esc(weeks[0]?.label||"-")} · precedentă: ${esc(weeks[1]?.label||"-")}</div>
+        </div>
+        <div class="export-row">
+          <span class="pill">Sortare activă: ${esc(pointsSortKey)}</span>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="compact">
+          <thead><tr>
+            <th>${head("member","Poreclă")}</th>
+            <th>${head("announcements","Anunțuri")}</th>
+            <th>${head("recruit","Angajare")}</th>
+            <th>${head("contracts","Contracte")}</th>
+            <th>${head("illegal","Ilegal")}</th>
+            <th>${head("ls","LS")}</th>
+            <th>${head("cayo","Cayo")}</th>
+            <th>${head("events","Evenimente")}</th>
+            <th>${head("components","Componente")}</th>
+            <th>${head("currentWeek",esc(weeks[0]?.label||"Curentă"))}</th>
+            <th>${head("previousWeek",esc(weeks[1]?.label||"Precedentă"))}</th>
+            <th>Eligibilitate</th>
+          </tr></thead>
+          <tbody>
+          ${rows.map(r=>`<tr class="${memberRowClass(r.member)}"><td><strong>${esc(r.member.nickname)}</strong></td><td>${r.announcements}</td><td>${r.recruit}</td><td>${r.contracts}</td><td>${r.illegal}</td><td>${r.ls}</td><td>${r.cayo}</td><td>${r.events}</td><td>${r.components}</td><td><strong>${r.currentWeek}</strong></td><td>${r.previousWeek}</td><td>${statusBadge(r.promo.status,r.promo.reason)}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  document.querySelectorAll("[data-sort]").forEach(btn=>btn.onclick=()=>{
+    const key=btn.dataset.sort;
+    if(pointsSortKey===key){pointsSortDir = pointsSortDir==="asc"?"desc":"asc";}
+    else {pointsSortKey=key; pointsSortDir="desc";}
+    renderPoints();
+  });
+}
+function renderPromotions(){
+  const elig=orderedMembers().filter(m=>promotionStatus(m).status==="Eligibil");
+  const miss=orderedMembers().filter(m=>promotionStatus(m).status==="Lipsesc condiții");
+  const no=orderedMembers().filter(m=>promotionStatus(m).status==="Neeligibil");
+  document.getElementById("promotions").innerHTML=`<div class="grid g3"><div class="card"><h3>Eligibili acum</h3><div class="stack">${elig.length?elig.map(m=>`<div class="mini-card"><div class="row-between"><strong>${m.nickname}</strong>${statusBadge("Eligibil")}</div><div class="muted">${m.rank} → ${RANKS[RANKS.indexOf(m.rank)+1]||"—"}</div></div>`).join(""):`<div class="muted">Nimeni eligibil momentan.</div>`}</div></div><div class="card"><h3>Lipsesc condiții</h3><div class="stack">${miss.length?miss.map(m=>{const p=promotionStatus(m); return `<div class="mini-card"><div class="row-between"><strong>${m.nickname}</strong>${statusBadge("Lipsesc condiții",p.reason)}</div><div class="muted">${m.rank}</div></div>`}).join(""):`<div class="muted">Nu există.</div>`}</div></div><div class="card"><h3>Sub minim / neeligibili</h3><div class="stack">${no.length?no.map(m=>{const p=promotionStatus(m); return `<div class="mini-card"><div class="row-between"><strong>${m.nickname}</strong>${statusBadge("Neeligibil",p.reason)}</div><div class="muted">${m.rank}</div></div>`}).join(""):`<div class="muted">Nu există.</div>`}</div></div></div>`;
+}
+function renderProfile(){
+  const m=memberById(selectedMemberId)||members[0];
+  if(!m){document.getElementById("profile").innerHTML=`<div class="card">Nu există membri.</div>`; return;}
+  const cur=currentStats(m.id), prev=prevStats(m.id), crit=criteria(m), promo=promotionStatus(m), hist=memberHistory(m.id,12);
+  document.getElementById("profile").innerHTML=`
+    <div class="card">
+      <div class="row-between" style="margin-bottom:14px;">
+        <h3>${icon("◎")}Fișă membru</h3>
+        <div style="min-width:260px"><select id="profileSelect">${orderedMembers().map(x=>`<option value="${x.id}" ${x.id===m.id?"selected":""}>${esc(x.nickname)} · ${esc(x.rank)}</option>`).join("")}</select></div>
+      </div>
+      <div class="grid g3">
+        <div class="mini">
+          <h3>${esc(m.nickname)}</h3>
+          <div class="list" style="margin-top:12px;">
+            <div class="kpi"><span>Nume</span><strong>${esc(m.name||"—")}</strong></div>
+            <div class="kpi"><span>Funcție</span><strong>${esc(m.rank)}</strong></div>
+            <div class="kpi"><span>Status</span><strong>${esc(m.status)}</strong></div>
+            <div class="kpi"><span>Ultima avansare</span><strong>${m.lastPromotion?formatRO(m.lastPromotion):"—"}</strong></div>
+            <div class="kpi"><span>Bancă</span><strong>${num(m.bankBalance).toLocaleString("ro-RO")}</strong></div>
+          </div>
+        </div>
+        <div class="mini">
+          <h3>Punctaj</h3>
+          <div class="list" style="margin-top:12px;">
+            <div class="kpi"><span>${esc(weeks[0]?.label||"Curentă")}</span><strong>${cur.points.total}P</strong></div>
+            <div class="kpi"><span>${esc(weeks[1]?.label||"Precedentă")}</span><strong>${prev.points.total}P</strong></div>
+            <div class="kpi"><span>Ilegal</span><strong>${cur.points.illegal}P</strong></div>
+            <div class="kpi"><span>LS</span><strong>${cur.points.ls}P</strong></div>
+            <div class="kpi"><span>Cayo</span><strong>${cur.points.cayo}P</strong></div>
+          </div>
+        </div>
+        <div class="mini">
+          <h3>Promovare</h3>
+          <div style="margin-top:12px;">${statusBadge(promo.status,promo.reason)}</div>
+          <div class="list" style="margin-top:12px;">
+            ${crit.map(r=>`<div class="kpi"><span>${esc(r.label)}</span><strong style="color:${r.ok?'#cde6d5':'#f0c2c2'}">${r.ok?'✓':'✗'}</strong></div>`).join("")}
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px;padding:0;border:none;box-shadow:none;background:transparent;">
+        <div class="grid g2">
+          <div class="mini">
+            <h3>Istoric membru</h3>
+            <div class="timeline" style="margin-top:12px;">
+              ${hist.length?hist.map(h=>`<div class="timeline-item"><div class="timeline-time">${fmtDateTime(h.createdAt)}</div><div><strong>${esc(h.type)}</strong><div class="hint" style="margin-top:4px;">${esc(h.message)}</div></div></div>`).join(""):`<div class="mini">Nu există istoric încă pentru acest membru.</div>`}
+            </div>
+          </div>
+          <div class="mini">
+            <h3>Observații utile</h3>
+            <div class="list" style="margin-top:12px;">
+              <div class="kpi"><span>Acte lipsă</span><strong>${docsMissing(m).length?esc(docsMissing(m).join(", ")):"Nimic"}</strong></div>
+              <div class="kpi"><span>Eligibilitate</span><strong>${esc(promo.status)}</strong></div>
+              <div class="kpi"><span>Motiv</span><strong>${esc(promo.reason||"—")}</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById("profileSelect").onchange=e=>{selectedMemberId=num(e.target.value); renderProfile();};
+}
+function renderGuide(){
+  document.getElementById("guide").innerHTML=`<div class="grid g2">${GUIDE.map(g=>`<div class="card"><h3>${g.rank}</h3><div class="hint" style="margin-top:4px;margin-bottom:10px;">${g.promotionTo?`Promovare la ${g.promotionTo}`:"Rang maxim"}</div><div class="list">${g.requirements.map(r=>`<div class="mini">${esc(r)}</div>`).join("")}</div></div>`).join("")}</div>`;
+}
+function showToast(message,type="success"){
+  const root=document.getElementById("toastRoot");
+  if(!root) return;
+  const el=document.createElement("div");
+  el.className=`toast ${type}`;
+  el.textContent=message;
+  root.appendChild(el);
+  setTimeout(()=>{el.style.opacity="0"; el.style.transform="translateY(8px)";}, 2600);
+  setTimeout(()=>el.remove(), 3000);
+}
+function memberRowClass(member){
+  const promo=promotionStatus(member);
+  const docs=docsMissing(member).length;
+  const cur=currentStats(member.id).points.total;
+  if(promo.status==="Eligibil") return "member-row-eligible";
+  if(cur===0 || cur<30) return "member-row-danger";
+  if(promo.status==="Lipsesc condiții" || docs) return "member-row-warning";
+  return "";
+}
+function topMembersBy(fn, limit=5){
+  return [...members].map(m=>({member:m,value:fn(m)})).sort((a,b)=>b.value-a.value).slice(0,limit);
+}
+function renderAll(){
+  renderDashboard();
+  renderMembers();
+  renderActivities();
+  renderPoints();
+  renderPromotions();
+  renderProfile();
+  renderGuide();
+}
+document.getElementById("openAddMember").onclick=openAddMemberModal;
+document.getElementById("resetDemo").onclick=()=>{weeks=defaultWeeks(); members=JSON.parse(JSON.stringify(DEMO_MEMBERS)); activities=demoActivities(weeks); historyLog=[]; selectedMemberId=members[0]?.id||1; memberSearch=""; rankFilter="all"; statusFilter="all"; bulkRows=[{category:"announcements",qty:1,ppu:1,description:""}]; saveAll(); renderAll(); showToast("Demo resetat.","warn");};
+function exportMembersCsv(){
+  const rows=[["Porecla","Nume","Functia","Status","PuncteCurente","PunctePrecedente","Eligibilitate","Telefon","CNP","Masina"]];
+  orderedMembers().forEach(m=>{
+    const cur=currentStats(m.id).points.total, prev=prevStats(m.id).points.total, promo=promotionStatus(m).status;
+    rows.push([m.nickname,m.name,m.rank,m.status,cur,prev,promo,m.phone,m.cnp,m.carNumber]);
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="montvario_export.csv";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),500);
+}
+document.getElementById("exportCsv").onclick=exportMembersCsv;
+document.getElementById("exportMeetingCsv").onclick=exportMeetingCsv;
+renderAll();
+</script>
 </body>
 </html>
